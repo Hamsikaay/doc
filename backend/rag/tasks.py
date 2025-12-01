@@ -8,7 +8,7 @@ Celery tasks:
 import io
 import uuid
 import time
-from celery_app import celery
+from rag.celery_app import celery
 from rag.db import SessionLocal, Document, Chunk
 from rag.chunker import chunk_text
 from rag.vectorstore import vstore

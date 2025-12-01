@@ -133,12 +133,15 @@ function handleFileSelect(e) {
     }
 }
 
-function handleUpload() {
+async function handleUpload() {
     if (!state.selectedFile) return;
 
     document.getElementById('uploadBtn').disabled = true;
     document.getElementById('uploadBtn').textContent = 'Uploading...';
 
+    // --------------------------------
+    // DEMO MODE (no backend)
+    // --------------------------------
     if (DEMO_MODE) {
         setTimeout(() => {
             const newFile = {
@@ -159,7 +162,44 @@ function handleUpload() {
         }, 1500);
         return;
     }
+
+    // --------------------------------
+    // REAL BACKEND UPLOAD
+    // --------------------------------
+    try {
+        const formData = new FormData();
+        formData.append("file", state.selectedFile);
+
+        const res = await fetch(`${API_BASE}/rag/upload`, {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + state.token
+            },
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert("Upload failed: " + data.detail);
+            return;
+        }
+
+        addMessage("assistant", `Your file "${state.selectedFile.name}" is being processed. Task ID: ${data.task_id}`);
+
+        // reset state/UI
+        state.selectedFile = null;
+        document.getElementById('selectedFile').classList.add('hidden');
+        document.getElementById('fileInput').value = '';
+        document.getElementById('uploadBtn').textContent = 'Upload Document';
+        document.getElementById('uploadBtn').disabled = false;
+
+    } catch (e) {
+        alert("Error uploading file");
+        console.error(e);
+    }
 }
+
 
 function renderFiles() {
     const filesList = document.getElementById('filesList');

@@ -1,8 +1,8 @@
 from fastapi import Header, HTTPException, Depends
 from jose import jwt, JWTError
-from database import get_db
-from models import User
-from jwt_config import SECRET_KEY, ALGORITHM
+from backend.database import get_db
+from backend.user_models import User
+from backend.jwt_config import SECRET_KEY, ALGORITHM
 
 
 def get_current_user(Authorization: str = Header(None), db=Depends(get_db)):

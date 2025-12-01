@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Assistant | AI Document Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Design System & Variables */
+        :root {
+            --primary-h: 230;
+            --primary-s: 85%;
+            --primary-l: 60%;
+            --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+            --primary-light: hsl(var(--primary-h), var(--primary-s), 96%);
+
+            --accent-h: 280;
+            --accent-s: 70%;
+            --accent-l: 60%;
+            --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+
+            --text-main: #1a1a1a;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --border-color: #e1e4e8;
+
+            --success: #10b981;
+            --error: #ef4444;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            height: 90vh;
+            max-height: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Auth Views */
+        .auth-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.5s;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        label {
+            display: block;
+            color: var(--text-main);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Main App */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .app-header {
+            padding: 20px 32px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title-icon {
+            font-size: 32px;
+        }
+
+        .title-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .user-card {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 140px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .avatar-circle {
+            width: 42px;
+            height: 42px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: var(--error);
+            border-color: #fecaca;
+        }
+
+        .app-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #f8fafc;
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-area {
+            background: white;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 24px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .file-list-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            background: white;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .file-item:hover {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .file-icon {
+            font-size: 20px;
+        }
+
+        .file-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #ecfdf5;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Chat */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .message {
+            display: flex;
+            gap: 16px;
+            max-width: 85%;
+            animation: slideIn 0.3s;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, #FFF0F5 0%, #FFE4E1 100%);
+            color: #FF69B4;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #e0e7ff 100%);
+            color: var(--primary);
+        }
+
+        .message-content {
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 15px;
+            line-height: 1.6;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message.assistant .message-content {
+            background: #f8fafc;
+            border-top-left-radius: 4px;
+            color: var(--text-main);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .input-area {
+            padding: 24px 32px;
+            background: white;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 4px;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 20px;
+            font-size: 15px;
+            resize: none;
+            max-height: 120px;
+            min-height: 48px;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 4px;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            background: #cbd5e1;
+            cursor: default;
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .success-msg {
+            color: var(--success);
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .demo-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Authentication View -->
+        <div id="authView" class="auth-wrapper">
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-container">
+                <div class="logo">
+                    <h1>🧠 Knowledge Assistant</h1>
+                    <p>AI-Powered Document Intelligence Platform</p>
+                </div>
+
+                <div class="demo-badge">Demo Mode</div>
+
+                <div id="loginError" class="error-msg hidden"></div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" required placeholder="demo@example.com"
+                            value="demo@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required placeholder="••••••••" value="password">
+                    </div>
+
+                    <button type="submit" class="btn">Sign In</button>
+
+                    <div style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
+                        Don't have an account? <a href="#" onclick="showSignup()"
+                            style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign up</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-container hidden">
+                <div class="logo">
+                    <h1>Create Account</h1>
+                    <p>Join thousands of professionals using AI</p>
+                </div>
+
+                <div id="signupError" class="error-msg hidden"></div>
+                <div id="signupSuccess" class="success-msg hidden"></div>
+
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" required placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="john@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required minlength="6"
+                            placeholder="Min 6 characters">
+                    </div>
+
+                    <button type="submit" class="btn">Create Account</button>
+
+                    <div style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
+                        Already have an account? <a href="#" onclick="showLogin()"
+                            style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign in</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Application View -->
+        <div id="mainApp" class="app-container hidden">
+            <header class="app-header">
+                <h1 class="app-title">
+                    <span class="title-icon">📚</span>
+                    <span class="title-text">Knowledge Assistant</span>
+                </h1>
+
+                <div class="user-card">
+                    <div class="user-profile">
+                        <div class="avatar-circle" id="userAvatar">U</div>
+                        <span id="userName" class="user-name">User</span>
+                    </div>
+                    <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </header>
+
+            <div class="app-content">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <span class="upload-icon">📁</span>
+                        <div class="upload-text">Click to upload documents</div>
+                        <div style="font-size: 11px; color: var(--text-light); margin-top: 4px;">PDF, DOCX, TXT up to
+                            10MB</div>
+                        <input type="file" id="fileInput" class="hidden" accept=".pdf,.doc,.docx,.txt"
+                            onchange="handleFileSelect(event)">
+                    </div>
+
+                    <div id="selectedFile" class="hidden"
+                        style="margin-bottom: 10px; font-size: 13px; color: var(--primary); background: var(--primary-light); padding: 8px; border-radius: 6px;">
+                    </div>
+
+                    <button class="btn" id="uploadBtn" disabled onclick="handleUpload()"
+                        style="margin-bottom: 24px; font-size: 14px; padding: 10px;">Upload Document</button>
+
+                    <div class="file-list-header">
+                        <span>Your Documents</span>
+                        <span>Status</span>
+                    </div>
+
+                    <div class="file-list" id="filesList">
+                        <!-- Files will be inserted here -->
+                    </div>
+                </aside>
+
+                <!-- Chat Area -->
+                <main class="chat-area">
+                    <div class="messages-container" id="messages">
+                        <div class="message assistant">
+                            <div class="message-avatar">✨</div>
+                            <div class="message-content">
+                                Hello! I'm your Knowledge Assistant. Upload documents and ask me questions about them.
+                                I'll help you find the information you need.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <textarea id="chatInput" class="chat-input"
+                                placeholder="Ask a question about your documents..." rows="1"></textarea>
+                            <button id="sendBtn" class="send-btn" onclick="handleSendMessage()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                        <div style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--text-light);">
+                            AI can make mistakes. Please verify important information.
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo Mode - No backend required
+        const DEMO_MODE = true;
+
+        // State management
+        let state = {
+            token: null,
+            user: null,
+            files: [],
+            selectedFile: null
+        };
+
+        // API Base URL (for when you connect to real backend)
+        const API_BASE = 'http://localhost:8000/api';
+
+        function showSignup() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (DEMO_MODE) {
+                document.getElementById('signupSuccess').textContent = 'Account created successfully! Please sign in.';
+                document.getElementById('signupSuccess').classList.remove('hidden');
+                setTimeout(() => {
+                    showLogin();
+                    document.getElementById('loginEmail').value = email;
+                }, 1500);
+                return;
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (DEMO_MODE) {
+                state.token = 'demo-token-' + Date.now();
+                state.user = {
+                    name: email.split('@')[0],
+                    email: email
+                };
+                showMainApp();
+                return;
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userName').textContent = state.user?.name || 'User';
+            document.getElementById('userAvatar').textContent = state.user?.name?.charAt(0).toUpperCase() || 'U';
+
+            if (DEMO_MODE) {
+                state.files = [
+                    { id: 1, name: 'Product_Documentation.pdf', size: '2.4 MB', date: 'Just now' },
+                    { id: 2, name: 'Meeting_Notes_Q4.docx', size: '1.1 MB', date: '2 hours ago' },
+                    { id: 3, name: 'Research_Paper.pdf', size: '856 KB', date: 'Yesterday' }
+                ];
+                renderFiles();
+            }
+        }
+
+        function handleLogout() {
+            state.token = null;
+            state.user = null;
+            state.files = [];
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('authView').classList.remove('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = `
+                <div class="message assistant">
+                    <div class="message-avatar">✨</div>
+                    <div class="message-content">
+                        Hello! I'm your Knowledge Assistant. Upload documents and ask me questions about them.
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                state.selectedFile = file;
+                document.getElementById('selectedFile').textContent = `Selected: ${file.name}`;
+                document.getElementById('selectedFile').classList.remove('hidden');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        function handleUpload() {
+            if (!state.selectedFile) return;
+
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('uploadBtn').textContent = 'Uploading...';
+
+            if (DEMO_MODE) {
+                setTimeout(() => {
+                    const newFile = {
+                        id: Date.now(),
+                        name: state.selectedFile.name,
+                        size: formatSize(state.selectedFile.size),
+                        date: 'Just now'
+                    };
+                    state.files.unshift(newFile);
+                    renderFiles();
+
+                    state.selectedFile = null;
+                    document.getElementById('selectedFile').classList.add('hidden');
+                    document.getElementById('fileInput').value = '';
+                    document.getElementById('uploadBtn').textContent = 'Upload Document';
+
+                    addMessage('assistant', `Great! I've processed "${newFile.name}". You can now ask me questions about this document.`);
+                }, 1500);
+                return;
+            }
+        }
+
+        function renderFiles() {
+            const filesList = document.getElementById('filesList');
+            if (state.files.length === 0) {
+                filesList.innerHTML = '<div style="color: #999; font-size: 13px; padding: 10px;">No documents uploaded yet</div>';
+                return;
+            }
+
+            filesList.innerHTML = state.files.map(file => `
+                <div class="file-item">
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">${file.size} • ${file.date}</div>
+                    </div>
+                    <div class="status-badge">Ready</div>
+                </div>
+            `).join('');
+        }
+
+        function handleSendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+
+            document.getElementById('sendBtn').disabled = true;
+
+            if (DEMO_MODE) {
+                setTimeout(() => {
+                    const responses = [
+                        "Based on the documents you've uploaded, I found relevant information. The product documentation mentions this feature in detail.",
+                        "That's an interesting question! According to the meeting notes, the team discussed this topic in the Q4 review.",
+                        "I've analyzed your documents and found several references to this. Would you like me to provide specific quotes?",
+                        "The research paper contains detailed information about this topic. Let me summarize the key points for you.",
+                        "I can help with that! The documents show that this process involves three main steps that I can explain.",
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addMessage('assistant', randomResponse);
+                    document.getElementById('sendBtn').disabled = false;
+                }, 1500);
+                return;
+            }
+        }
+
+        function addMessage(type, content) {
+            const messages = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = type === 'user' ? (state.user?.name?.charAt(0).toUpperCase() || 'U') : '✨';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            messages.appendChild(messageDiv);
+
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Knowledge Assistant loaded!');
+
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                    }
+                });
+
+                chatInput.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

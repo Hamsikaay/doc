@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Assistant | AI Document Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Authentication View -->
+        <div id="authView" class="auth-wrapper">
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-container">
+                <div class="logo">
+                    <h1>🧠 Knowledge Assistant</h1>
+                    <p>AI-Powered Document Intelligence Platform</p>
+                </div>
+
+                <!-- <div class="demo-badge">Demo Mode</div> -->
+
+                <div id="loginError" class="error-msg hidden"></div>
+
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" required placeholder="demo@example.com"
+                            value="demo@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required placeholder="••••••••" value="password">
+                    </div>
+
+                    <button type="submit" class="btn">Sign In</button>
+
+                    <div style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
+                        Don't have an account? <a href="#" onclick="showSignup()"
+                            style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign up</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-container hidden">
+                <div class="logo">
+                    <h1>Create Account</h1>
+                    <p>Join thousands of professionals using AI</p>
+                </div>
+
+                <div id="signupError" class="error-msg hidden"></div>
+                <div id="signupSuccess" class="success-msg hidden"></div>
+
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" required placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="john@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required minlength="6"
+                            placeholder="Min 6 characters">
+                    </div>
+
+                    <button type="submit" class="btn">Create Account</button>
+
+                    <div style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
+                        Already have an account? <a href="#" onclick="showLogin()"
+                            style="color: var(--primary); text-decoration: none; font-weight: 600;">Sign in</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Application View -->
+        <div id="mainApp" class="app-container hidden">
+            <header class="app-header">
+                <h1 class="app-title">
+                    <span class="title-icon">📚</span>
+                    <span class="title-text">Knowledge Assistant</span>
+                </h1>
+
+                <div class="user-card">
+                    <div class="user-profile">
+                        <div class="avatar-circle" id="userAvatar">U</div>
+                        <span id="userName" class="user-name">User</span>
+                    </div>
+                    <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </header>
+
+            <div class="app-content">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <span class="upload-icon">📁</span>
+                        <div class="upload-text">Click to upload documents</div>
+                        <div style="font-size: 11px; color: var(--text-light); margin-top: 4px;">PDF, DOCX, TXT up to
+                            10MB</div>
+                        <input type="file" id="fileInput" class="hidden" accept=".pdf,.doc,.docx,.txt"
+                            onchange="handleFileSelect(event)">
+                    </div>
+
+                    <div id="selectedFile" class="hidden"
+                        style="margin-bottom: 10px; font-size: 13px; color: var(--primary); background: var(--primary-light); padding: 8px; border-radius: 6px;">
+                    </div>
+
+                    <button class="btn" id="uploadBtn" disabled onclick="handleUpload()"
+                        style="margin-bottom: 24px; font-size: 14px; padding: 10px;">Upload Document</button>
+
+                    <div class="file-list-header">
+                        <span>Your Documents</span>
+                        <span>Status</span>
+                    </div>
+
+                    <div class="file-list" id="filesList">
+                        <!-- Files will be inserted here -->
+                    </div>
+                </aside>
+
+                <!-- Chat Area -->
+                <main class="chat-area">
+                    <div class="messages-container" id="messages">
+                        <div class="message assistant">
+                            <div class="message-avatar">✨</div>
+                            <div class="message-content">
+                                Hello! I'm your Knowledge Assistant. Upload documents and ask me questions about them.
+                                I'll help you find the information you need.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <div class="input-wrapper">
+                            <textarea id="chatInput" class="chat-input"
+                                placeholder="Ask a question about your documents..." rows="1"></textarea>
+                            <button id="sendBtn" class="send-btn" onclick="handleSendMessage()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                        <div style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--text-light);">
+                            AI can make mistakes. Please verify important information.
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

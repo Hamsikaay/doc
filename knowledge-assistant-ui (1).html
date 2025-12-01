@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .auth-container {
+            max-width: 450px;
+            padding: 50px 40px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .switch-auth a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .switch-auth a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Main App Styles */
+        .app-container {
+            display: none;
+            height: 90vh;
+            max-height: 800px;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .app-header h2 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .app-content {
+            display: flex;
+            height: calc(100% - 64px);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background: white;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #f0f0ff;
+        }
+
+        .upload-btn {
+            margin-top: 10px;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-list h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .file-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .message-content {
+            background: #f5f5f5;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chat-input-container {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            font-size: 15px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .selected-file {
+            margin-top: 10px;
+            padding: 8px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #2e7d32;
+        }
+
+        .demo-notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-container">
+            <div class="logo">
+                <h1>🧠 Knowledge Assistant</h1>
+                <p>AI-Powered Document Intelligence</p>
+            </div>
+            <div class="demo-notice">
+                Demo Mode: Use any email/password to login
+            </div>
+            <div id="loginError" class="error-message"></div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="demo@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+            <div class="switch-auth">
+                Don't have an account? <a onclick="showSignup()">Sign up</a>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-container hidden">
+            <div class="logo">
+                <h1>🧠 Knowledge Assistant</h1>
+                <p>Create your account</p>
+            </div>
+            <div class="demo-notice">
+                Demo Mode: Registration simulation
+            </div>
+            <div id="signupError" class="error-message"></div>
+            <div id="signupSuccess" class="success-message"></div>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required minlength="6" placeholder="Min 6 characters">
+                </div>
+                <button type="submit" class="btn">Create Account</button>
+            </form>
+            <div class="switch-auth">
+                Already have an account? <a onclick="showLogin()">Sign in</a>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="mainApp" class="app-container">
+            <div class="app-header">
+                <h2>🧠 Knowledge Assistant</h2>
+                <div class="user-info">
+                    <span id="userName">User</span>
+                    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+            <div class="app-content">
+                <div class="sidebar">
+                    <div class="upload-section">
+                        <h3>Upload Documents</h3>
+                        <div class="demo-notice">
+                            Demo: Files shown for preview only
+                        </div>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" onchange="handleFileSelect(event)">
+                            <label for="fileInput" class="file-input-label">
+                                📁 Choose File
+                            </label>
+                        </div>
+                        <div id="selectedFile" class="selected-file hidden"></div>
+                        <button class="upload-btn" id="uploadBtn" onclick="handleUpload()" disabled>Upload Document</button>
+                        <div id="uploadLoading" class="loading">Uploading...</div>
+                    </div>
+                    <div class="file-list">
+                        <h4>Uploaded Documents</h4>
+                        <div id="filesList"></div>
+                    </div>
+                </div>
+                <div class="chat-container">
+                    <div class="messages" id="messages">
+                        <div class="message assistant">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                Hello! I'm your Knowledge Assistant. Upload documents and ask me questions about them. I'll help you find the information you need.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" id="chatInput" placeholder="Ask me anything about your documents..." rows="1"></textarea>
+                            <button class="send-btn" id="sendBtn" onclick="handleSendMessage()">➤</button>
+                        </div>
+                        <div id="chatLoading" class="loading">Thinking...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo Mode - No backend required
+        const DEMO_MODE = true;
+
+        // State management
+        let state = {
+            token: null,
+            user: null,
+            files: [],
+            selectedFile: null
+        };
+
+        // API Base URL (for when you connect to real backend)
+        const API_BASE = 'http://localhost:8000/api';
+
+        function showSignup() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+            document.getElementById('signupError').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (DEMO_MODE) {
+                // Demo mode - simulate signup
+                document.getElementById('signupSuccess').textContent = 'Account created successfully! Please sign in.';
+                document.getElementById('signupSuccess').style.display = 'block';
+                setTimeout(() => {
+                    showLogin();
+                    document.getElementById('loginEmail').value = email;
+                }, 1500);
+                return;
+            }
+
+            // Real API call (when backend is ready)
+            fetch(`${API_BASE}/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('signupSuccess').textContent = 'Account created! Please sign in.';
+                    document.getElementById('signupSuccess').style.display = 'block';
+                    setTimeout(() => showLogin(), 2000);
+                } else {
+                    document.getElementById('signupError').textContent = data.message || 'Signup failed';
+                    document.getElementById('signupError').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Signup error:', error);
+                document.getElementById('signupError').textContent = 'Network error. Please try again.';
+                document.getElementById('signupError').style.display = 'block';
+            });
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (DEMO_MODE) {
+                // Demo mode - simulate login
+                state.token = 'demo-token-' + Date.now();
+                state.user = {
+                    name: email.split('@')[0],
+                    email: email
+                };
+                showMainApp();
+                return;
+            }
+
+            // Real API call (when backend is ready)
+            fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    state.token = data.token;
+                    state.user = data.user;
+                    showMainApp();
+                } else {
+                    document.getElementById('loginError').textContent = data.message || 'Login failed';
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                document.getElementById('loginError').textContent = 'Network error. Please try again.';
+                document.getElementById('loginError').style.display = 'block';
+            });
+        }
+
+        function showMainApp() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userName').textContent = state.user?.name || 'User';
+            
+            // Load demo files
+            if (DEMO_MODE) {
+                state.files = [
+                    { id: 1, name: 'Product_Documentation.pdf', status: 'ready' },
+                    { id: 2, name: 'Meeting_Notes_Q4.docx', status: 'ready' },
+                    { id: 3, name: 'Research_Paper.pdf', status: 'ready' }
+                ];
+                renderFiles();
+            } else {
+                loadFiles();
+            }
+        }
+
+        function handleLogout() {
+            state.token = null;
+            state.user = null;
+            state.files = [];
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginForm').classList.remove('hidden');
+            
+            // Clear messages except welcome
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = `
+                <div class="message assistant">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        Hello! I'm your Knowledge Assistant. Upload documents and ask me questions about them. I'll help you find the information you need.
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                state.selectedFile = file;
+                document.getElementById('selectedFile').textContent = `Selected: ${file.name}`;
+                document.getElementById('selectedFile').classList.remove('hidden');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        function handleUpload() {
+            if (!state.selectedFile) return;
+
+            document.getElementById('uploadLoading').classList.add('active');
+            document.getElementById('uploadBtn').disabled = true;
+
+            if (DEMO_MODE) {
+                // Demo mode - simulate upload
+                setTimeout(() => {
+                    const newFile = {
+                        id: Date.now(),
+                        name: state.selectedFile.name,
+                        status: 'ready'
+                    };
+                    state.files.push(newFile);
+                    renderFiles();
+                    
+                    state.selectedFile = null;
+                    document.getElementById('selectedFile').classList.add('hidden');
+                    document.getElementById('fileInput').value = '';
+                    document.getElementById('uploadLoading').classList.remove('active');
+                    
+                    addMessage('assistant', `Great! I've processed "${newFile.name}". You can now ask me questions about this document.`);
+                }, 1500);
+                return;
+            }
+
+            // Real API call (when backend is ready)
+            const formData = new FormData();
+            formData.append('file', state.selectedFile);
+
+            fetch(`${API_BASE}/documents/upload`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${state.token}`
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    state.files.push(data.file);
+                    renderFiles();
+                    state.selectedFile = null;
+                    document.getElementById('selectedFile').classList.add('hidden');
+                    document.getElementById('fileInput').value = '';
+                } else {
+                    alert('Upload failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                alert('Upload failed. Please try again.');
+            })
+            .finally(() => {
+                document.getElementById('uploadLoading').classList.remove('active');
+                document.getElementById('uploadBtn').disabled = true;
+            });
+        }
+
+        function loadFiles() {
+            fetch(`${API_BASE}/documents`, {
+                headers: {
+                    'Authorization': `Bearer ${state.token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                state.files = data.files || [];
+                renderFiles();
+            })
+            .catch(error => {
+                console.error('Load files error:', error);
+            });
+        }
+
+        function renderFiles() {
+            const filesList = document.getElementById('filesList');
+            if (state.files.length === 0) {
+                filesList.innerHTML = '<div style="color: #999; font-size: 13px; padding: 10px;">No documents uploaded yet</div>';
+                return;
+            }
+
+            filesList.innerHTML = state.files.map(file => `
+                <div class="file-item">
+                    <span>📄 ${file.name}</span>
+                    <span class="file-status">Ready</span>
+                </div>
+            `).join('');
+        }
+
+        function handleSendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            addMessage('user', message);
+            input.value = '';
+            
+            document.getElementById('chatLoading').classList.add('active');
+            document.getElementById('sendBtn').disabled = true;
+
+            if (DEMO_MODE) {
+                // Demo mode - simulate AI response
+                setTimeout(() => {
+                    const responses = [
+                        "Based on the documents you've uploaded, I found relevant information. The product documentation mentions this feature in detail.",
+                        "That's an interesting question! According to the meeting notes, the team discussed this topic in the Q4 review.",
+                        "I've analyzed your documents and found several references to this. Would you like me to provide specific quotes?",
+                        "The research paper contains detailed information about this topic. Let me summarize the key points for you.",
+                        "I can help with that! The documents show that this process involves three main steps that I can explain.",
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addMessage('assistant', randomResponse);
+                    document.getElementById('chatLoading').classList.remove('active');
+                    document.getElementById('sendBtn').disabled = false;
+                }, 1500);
+                return;
+            }
+
+            // Real API call (when backend is ready)
+            fetch(`${API_BASE}/chat/query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.token}`
+                },
+                body: JSON.stringify({ query: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.answer) {
+                    addMessage('assistant', data.answer);
+                } else {
+                    addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Chat error:', error);
+                addMessage('assistant', 'Network error. Please check your connection and try again.');
+            })
+            .finally(() => {
+                document.getElementById('chatLoading').classList.remove('active');
+                document.getElementById('sendBtn').disabled = false;
+            });
+        }
+
+        function addMessage(type, content) {
+            const messages = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = type === 'user' ? (state.user?.name?.charAt(0).toUpperCase() || 'U') : 'AI';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            messages.appendChild(messageDiv);
+            
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Knowledge Assistant loaded successfully!');
+            console.log('Demo Mode:', DEMO_MODE);
+            
+            // Allow Enter to send message
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -20,6 +20,8 @@ class Document(Base):
     doc_id = Column(String, unique=True, index=True)
     filename = Column(String)
     text = Column(Text)
+    user_id = Column(Integer, index=True, nullable=True)  # Added for user filtering
+    created_at = Column(String, nullable=True)  # Added for sorting
 
 class Chunk(Base):
     __tablename__ = "chunks"

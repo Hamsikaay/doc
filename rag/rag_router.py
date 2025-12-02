@@ -19,8 +19,26 @@ r = redis.Redis(host=REDIS_HOST, port=6379, db=1, decode_responses=True)
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...), user=Depends(get_current_user)):
     content = await file.read()
-    task = process_file.apply_async(args=[content, file.filename])
-    return {"task_id": task.id}
+    task = process_file.apply_async(args=[content, file.filename, user.id])
+    return {"task_id": task.id, "filename": file.filename}
+
+@router.get("/documents")
+def list_documents(user=Depends(get_current_user)):
+    """List all documents for the current user."""
+    from rag.db import Document
+    db = SessionLocal()
+    docs = db.query(Document).filter(Document.user_id == user.id).all()
+    db.close()
+    
+    result = []
+    for doc in docs:
+        result.append({
+            "id": doc.doc_id,
+            "name": doc.filename,
+            "date": doc.created_at or "Unknown",
+            "status": "Ready"
+        })
+    return {"documents": result}
 
 @router.get("/status/{task_id}")
 def get_status(task_id: str):

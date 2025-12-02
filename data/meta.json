@@ -43,5 +43,50 @@
     "doc_id": "a6f71c07-0920-450c-bf52-e5dd62f2d32a",
     "chunk_index": 8,
     "text_preview": "occurred.\nmysql> create table deletelogs(empno int primary key, ename varchar(30), job varchar(30));\nQuery OK, 0 rows affected (0.454 sec)\nmysql> delimiter $$\nmysql> create trigger logs before delete on employee\n-> for each row\n-> begin\n-> insert into deletelogs values(old.empno, old.ename, old.job)"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 0,
+    "text_preview": "Table name: Employee\nEmpno Ename Job Doj Sal Deptno\n7369 SMITH CLERK 1980-12-17 20000 20\n7499 ALLEN SALESMAN 1981-02-20 20000 30\n7521 WARD SALESMAN 1981-02-22 25000 30\n7566 JONES MANAGER 1981-04-02 30000 20\n7654 MARTIN SALESMAN 1981-09-28 15000 30\n7698 BLAKE MANAGER 1981-05-01 50000 30\n7782 CLARK MA"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 1,
+    "text_preview": "-> Loc VARCHAR(30)\n-> );\nQuery OK, 0 rows affected (0.211 sec)\nINSERT INTO Department (Deptno, Dname, Loc) VALUES\n-> (10, 'ACCOUNTING', 'Hyderabad'),\n-> (20, 'RESEARCH', 'Secunderabad'),\n-> (30, 'SALES', 'Bangalore'),\n-> (40, 'OPERATIONS', 'BOSTON');\nQuery OK, 4 rows affected (0.346 sec)\nRecords: 4 "
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 2,
+    "text_preview": "4-02', 30000, 20),\n-> (7654, 'MARTIN', 'SALESMAN', '1981-09-28', 15000, 30),\n-> (7698, 'BLAKE', 'MANAGER', '1981-05-01', 50000, 30),\n-> (7782, 'CLARK', 'MANAGER', '1981-06-09', 45000, 10),\n-> (7788, 'SCOTT', 'ANALYST', '1981-04-19', 32000, 20),\n-> (7839, 'KING', 'PRESIDENT', '1981-11-17', 50000, 10)"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 3,
+    "text_preview": "e informa(cid:415)on like salary. Task: Create a view named SalesStaffView that displays only\nrelevant informa(cid:415)on for SALESMAN staff, such as: ● Employee Number (Empno) ● Employee Name\n(Ename) ● Job Title (Job) ● Date of Joining (Doj) ● Department Number (Deptno) Ques(cid:415)ons: 1.\nDisplay"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 4,
+    "text_preview": "N | 1981-02-22 | 30 |\n| 7566 | JONES | MANAGER | 1981-04-02 | 20 |\n| 7654 | MARTIN | SALESMAN | 1981-09-28 | 30 |\n| 7698 | BLAKE | MANAGER | 1981-05-01 | 30 |\n| 7782 | CLARK | MANAGER | 1981-06-09 | 10 |\n| 7788 | SCOTT | ANALYST | 1981-04-19 | 20 |\n| 7839 | KING | PRESIDENT | 1981-11-17 | 10 |\n| 784"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 5,
+    "text_preview": "oyees who joined a(cid:332)er 1981. Task: Create a view named RecentJoinersView that joins the\nEmployee and Department tables and displays: ● Employee Number (Empno) ● Employee Name\n(Ename) ● Job Title (Job) ● Date of Joining (Doj) ● Department Name (Dname) ● Loca(cid:415)on (Loc)\nCondi(cid:415)on: "
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 6,
+    "text_preview": "---+\n| empno | ename | job | doj | dname | loc |\n+-------+--------+-----------+------------+------------+--------------+\n| 7782 | CLARK | MANAGER | 1981-06-09 | ACCOUNTING | Hyderabad |\n| 7839 | KING | PRESIDENT | 1981-11-17 | ACCOUNTING | Hyderabad |\n| 7934 | MILLER | CLERK | 1982-01-23 | ACCOUNTIN"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 7,
+    "text_preview": "SALES | Bangalore |\n| 7844 | TURNER | SALESMAN | 1981-09-08 | SALES | Bangalore |\n| 7900 | JAMES | CLERK | 1981-03-12 | SALES | Bangalore |\n+-------+--------+-----------+------------+------------+--------------+\n13 rows in set (0.019 sec)\nmysql> drop view recentjoinersview;\nQuery OK, 0 rows affected"
+  },
+  {
+    "doc_id": "6e56e2f8-db3e-48ae-82b2-708140d51f2e",
+    "chunk_index": 8,
+    "text_preview": "occurred.\nmysql> create table deletelogs(empno int primary key, ename varchar(30), job varchar(30));\nQuery OK, 0 rows affected (0.454 sec)\nmysql> delimiter $$\nmysql> create trigger logs before delete on employee\n-> for each row\n-> begin\n-> insert into deletelogs values(old.empno, old.ename, old.job)"
   }
 ]

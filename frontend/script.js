@@ -82,6 +82,24 @@ async function handleLogin(e) {
 }
 
 
+async function loadDocuments() {
+    try {
+        const res = await fetch(`${API_BASE}/rag/documents`, {
+            headers: {
+                'Authorization': `Bearer ${state.token}`
+            }
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            state.files = data.documents || [];
+            renderFiles();
+        }
+    } catch (error) {
+        console.error('Error loading documents:', error);
+    }
+}
+
 function showMainApp() {
     document.getElementById('loginForm').classList.add('hidden');
     document.getElementById('signupForm').classList.add('hidden');
@@ -97,6 +115,9 @@ function showMainApp() {
             { id: 3, name: 'Research_Paper.pdf', size: '856 KB', date: 'Yesterday' }
         ];
         renderFiles();
+    } else {
+        // Load documents from backend
+        loadDocuments();
     }
 }
 

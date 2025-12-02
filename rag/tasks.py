@@ -16,10 +16,10 @@ from rag.embeddings import embed_text
 import pdfplumber
 
 @celery.task(bind=True)
-def process_file(self, content_bytes, filename: str = None):
+def process_file(self, content_bytes, filename: str = None, user_id: int = None):
     """
     1. Extract text (PDF-aware)
-    2. Persist Document row
+    2. Persist Document row with user_id
     3. Chunk text and persist Chunk rows
     4. Enqueue ingest_document for embeddings
     Returns doc_id and ingestion task id (if created)
@@ -59,8 +59,15 @@ def process_file(self, content_bytes, filename: str = None):
 
     # 2) save Document
     doc_id = str(uuid.uuid4())
+    from datetime import datetime
     db = SessionLocal()
-    doc = Document(doc_id=doc_id, filename=filename or "", text=text)
+    doc = Document(
+        doc_id=doc_id, 
+        filename=filename or "", 
+        text=text,
+        user_id=user_id,
+        created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
     db.add(doc)
     db.commit()
 

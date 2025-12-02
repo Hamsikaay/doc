@@ -18,11 +18,13 @@ def get_current_user(Authorization: str = Header(None), db=Depends(get_db)):
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("sub")
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(401, "Invalid token payload")
     except JWTError:
         raise HTTPException(401, "Invalid or expired token")
 
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.id == int(user_id)).first()
     if not user:
         raise HTTPException(401, "User not found")
 

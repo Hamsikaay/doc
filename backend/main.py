@@ -28,6 +28,10 @@ app.add_middleware(
 # Register routes
 app.include_router(auth_router)
 
+# Import and register RAG router
+from rag.rag_router import router as rag_router
+app.include_router(rag_router, prefix="/rag", tags=["RAG"])
+
 
 @app.get("/")
 def root():

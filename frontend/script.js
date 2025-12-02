@@ -1,5 +1,5 @@
 // Demo Mode - No backend required
-const DEMO_MODE = true;
+const DEMO_MODE = false;
 
 // State management
 let state = {
@@ -133,7 +133,7 @@ function handleFileSelect(e) {
     }
 }
 
-function handleUpload() {
+async function handleUpload() {
     if (!state.selectedFile) return;
 
     document.getElementById('uploadBtn').disabled = true;
@@ -159,6 +159,91 @@ function handleUpload() {
         }, 1500);
         return;
     }
+
+    // Real backend upload
+    try {
+        const formData = new FormData();
+        formData.append('file', state.selectedFile);
+
+        const res = await fetch(`${API_BASE}/rag/upload`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${state.token}`
+            },
+            body: formData
+        });
+
+        if (!res.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const data = await res.json();
+        const taskId = data.task_id;
+
+        // Poll for task completion
+        const newFile = {
+            id: taskId,
+            name: state.selectedFile.name,
+            size: formatSize(state.selectedFile.size),
+            date: 'Just now',
+            status: 'Processing'
+        };
+        state.files.unshift(newFile);
+        renderFiles();
+
+        // Reset upload UI
+        state.selectedFile = null;
+        document.getElementById('selectedFile').classList.add('hidden');
+        document.getElementById('fileInput').value = '';
+        document.getElementById('uploadBtn').textContent = 'Upload Document';
+        document.getElementById('uploadBtn').disabled = false;
+
+        addMessage('assistant', `Uploading "${newFile.name}"... I'll let you know when it's ready.`);
+
+        // Poll task status
+        pollTaskStatus(taskId, newFile.name);
+    } catch (error) {
+        console.error('Upload error:', error);
+        addMessage('assistant', 'Sorry, there was an error uploading your document. Please try again.');
+        document.getElementById('uploadBtn').textContent = 'Upload Document';
+        document.getElementById('uploadBtn').disabled = false;
+    }
+}
+
+async function pollTaskStatus(taskId, filename) {
+    const maxAttempts = 30;
+    let attempts = 0;
+
+    const poll = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/rag/status/${taskId}`);
+            const data = await res.json();
+
+            if (data.state === 'SUCCESS') {
+                // Update file status
+                const fileIndex = state.files.findIndex(f => f.id === taskId);
+                if (fileIndex !== -1) {
+                    state.files[fileIndex].status = 'Ready';
+                    renderFiles();
+                }
+                addMessage('assistant', `Great! I've processed "${filename}". You can now ask me questions about this document.`);
+                return;
+            } else if (data.state === 'FAILURE') {
+                addMessage('assistant', `Sorry, there was an error processing "${filename}".`);
+                return;
+            }
+
+            // Continue polling
+            attempts++;
+            if (attempts < maxAttempts) {
+                setTimeout(poll, 2000);
+            }
+        } catch (error) {
+            console.error('Polling error:', error);
+        }
+    };
+
+    poll();
 }
 
 function renderFiles() {
@@ -175,12 +260,12 @@ function renderFiles() {
                 <div class="file-name">${file.name}</div>
                 <div class="file-meta">${file.size} • ${file.date}</div>
             </div>
-            <div class="status-badge">Ready</div>
+            <div class="status-badge">${file.status || 'Ready'}</div>
         </div>
     `).join('');
 }
 
-function handleSendMessage() {
+async function handleSendMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
 
@@ -206,6 +291,30 @@ function handleSendMessage() {
             document.getElementById('sendBtn').disabled = false;
         }, 1500);
         return;
+    }
+
+    // Real backend query
+    try {
+        const res = await fetch(`${API_BASE}/rag/query`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${state.token}`
+            },
+            body: JSON.stringify({ question: message })
+        });
+
+        if (!res.ok) {
+            throw new Error('Query failed');
+        }
+
+        const data = await res.json();
+        addMessage('assistant', data.answer);
+    } catch (error) {
+        console.error('Query error:', error);
+        addMessage('assistant', 'Sorry, I encountered an error processing your question. Please try again.');
+    } finally {
+        document.getElementById('sendBtn').disabled = false;
     }
 }
 

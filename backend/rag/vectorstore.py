@@ -11,7 +11,7 @@ import json
 
 INDEX_PATH = "data/faiss.index"
 META_PATH = "data/meta.json"
-DIM = int(os.getenv("EMBED_DIM", 384))
+DIM = int(os.getenv("EMBED_DIM", 1024))
 
 class SimpleVStore:
     def __init__(self):

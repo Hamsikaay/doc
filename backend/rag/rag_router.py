@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from rag.tasks import process_file
 from rag.embeddings import embed_text
 from rag.vectorstore import vstore
-from rag.llm import pseudo_llm_generate
-from db import SessionLocal, Chunk
-from auth.utils import get_current_user
+from rag.llm import generate_answer
+from rag.db import SessionLocal, Chunk
+from auth_dependencies import get_current_user
 
 router = APIRouter()
 
@@ -42,7 +42,7 @@ def query(q: QueryIn, user=Depends(get_current_user)):
     hits = vstore.search(qvec, top_k=4)
 
     context = "\n\n".join([h["meta"]["text_preview"] for h in hits])
-    answer = pseudo_llm_generate(q.question, context)
+    answer = generate_answer(q.question, context)
 
     r.setex(f"cache:query:{qhash}", 3600, answer)
     return {"answer": answer, "hits": hits, "cached": False}

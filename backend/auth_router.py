@@ -12,7 +12,7 @@ from jwt_config import SECRET_KEY, ALGORITHM
 
 
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(tags=["Auth"])
 
 # In-memory temporary DB — replace with real DB later
 

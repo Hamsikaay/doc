@@ -15,8 +15,8 @@ from rag.vectorstore import vstore
 from rag.embeddings import embed_text
 import pdfplumber
 
-@celery.task(bind=True)
-def process_file(self, content_bytes, filename: str = None):
+@celery.task(name="rag.tasks.process_file")
+def process_file(content_bytes, filename: str ,user_id:int):
     """
     1. Extract text (PDF-aware)
     2. Persist Document row

@@ -96,22 +96,46 @@
 #     )
 
 #     return response.choices[0].message["content"]
-from huggingface_hub import InferenceClient
+# 
+
 import os
+from huggingface_hub import InferenceClient
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 
+# ✅ THIS MODEL IS CONFIRMED WORKING FOR YOU
+MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
+
 client = InferenceClient(
-    model="Qwen/Qwen2.5-7B-Instruct",
-    token=HF_TOKEN,
+    model=MODEL_ID,
+    token=HF_TOKEN
 )
 
-def generate_answer(question, context):
-    prompt = f"Context:\n{context}\n\nQuestion: {question}\nAnswer:"
+def generate_answer(question: str, context: str) -> str:
+    prompt = f"""
+You are a professional teacher AI.
+
+STRICT RULES:
+- Always format the answer using:
+  - Headings
+  - Bullet points
+  - Numbered lists
+- Add proper line breaks.
+- Never return a single paragraph.
+- Make answers exam-ready.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Now return a clean, well-structured formatted answer.
+"""
 
     response = client.chat_completion(
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=300,
+        max_tokens=600,
         temperature=0.3,
     )
 

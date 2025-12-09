@@ -4,56 +4,160 @@ Small FAISS-backed vector store with JSON metadata persistence.
 Meta is a list of dicts where position i corresponds to FAISS index i.
 This is simple and good for single-node demo; for production use RedisVector/Milvus.
 """
+# import faiss
+# import numpy as np
+# import os
+# import json
+
+# INDEX_PATH = "data/faiss.index"
+# META_PATH = "data/meta.json"
+# DIM = int(os.getenv("EMBED_DIM", 1024))
+
+# class SimpleVStore:
+#     def __init__(self):
+#         os.makedirs("data", exist_ok=True)
+#         if os.path.exists(INDEX_PATH) and os.path.exists(META_PATH):
+#             try:
+#                 self.index = faiss.read_index(INDEX_PATH)
+#                 self.meta = json.load(open(META_PATH, "r", encoding="utf-8"))
+#             except Exception:
+#                 # fallback to new index
+#                 self.index = faiss.IndexFlatL2(DIM)
+#                 self.meta = []
+#         else:
+#             self.index = faiss.IndexFlatL2(DIM)
+#             self.meta = []
+
+#     def add(self, vec: np.ndarray, metadata: dict):
+#         # vec must be (dim, ) float32
+#         if vec.dtype != np.float32:
+#             vec = vec.astype('float32')
+#         # id = current number of vectors
+#         idx = self.index.ntotal
+#         self.index.add(np.array([vec]).astype('float32'))
+#         self.meta.append(metadata)
+#         # persist
+#         faiss.write_index(self.index, INDEX_PATH)
+#         with open(META_PATH, "w", encoding="utf-8") as f:
+#             json.dump(self.meta, f, ensure_ascii=False, indent=2)
+#         return idx
+
+#     def search(self, vec: np.ndarray, top_k: int = 4):
+#         if self.index.ntotal == 0:
+#             return []
+#         if vec.dtype != np.float32:
+#             vec = vec.astype('float32')
+#         D, I = self.index.search(np.array([vec]), top_k)
+#         hits = []
+#         for dist, idx in zip(D[0], I[0]):
+#             if int(idx) < 0:
+#                 continue
+#             hits.append({"score": float(dist), "meta": self.meta[int(idx)], "idx": int(idx)})
+#         return hits
+
+# # single global instance for demo
+# vstore = SimpleVStore()
+
+
+
 import faiss
 import numpy as np
 import os
 import json
 
-INDEX_PATH = "data/faiss.index"
-META_PATH = "data/meta.json"
-DIM = int(os.getenv("EMBED_DIM", 1024))
+BASE_DATA_DIR = "data"
+EMBED_DIM = int(os.getenv("EMBED_DIM", 384))
+
+
+def _ensure_doc_dir(doc_id: str):
+    if not doc_id:
+        raise ValueError("doc_id must not be None")
+
+    folder = os.path.join(BASE_DATA_DIR, str(doc_id))
+    os.makedirs(folder, exist_ok=True)
+    return folder
+
+
+def _paths_for_doc(doc_id: str):
+    folder = _ensure_doc_dir(doc_id)
+    return (
+        os.path.join(folder, "faiss.index"),
+        os.path.join(folder, "meta.json"),
+    )
+
 
 class SimpleVStore:
     def __init__(self):
-        os.makedirs("data", exist_ok=True)
-        if os.path.exists(INDEX_PATH) and os.path.exists(META_PATH):
-            try:
-                self.index = faiss.read_index(INDEX_PATH)
-                self.meta = json.load(open(META_PATH, "r", encoding="utf-8"))
-            except Exception:
-                # fallback to new index
-                self.index = faiss.IndexFlatL2(DIM)
-                self.meta = []
+        os.makedirs(BASE_DATA_DIR, exist_ok=True)
+
+    def _load_index_and_meta(self, doc_id: str):
+        index_path, meta_path = _paths_for_doc(doc_id)
+
+        if os.path.exists(index_path) and os.path.exists(meta_path):
+            index = faiss.read_index(index_path)
+            meta = json.load(open(meta_path, "r", encoding="utf-8"))
+
+            # ✅ Safety check if model changes
+            if index.d != EMBED_DIM:
+                index = faiss.IndexFlatL2(EMBED_DIM)
+                meta = []
         else:
-            self.index = faiss.IndexFlatL2(DIM)
-            self.meta = []
+            index = faiss.IndexFlatL2(EMBED_DIM)
+            meta = []
 
-    def add(self, vec: np.ndarray, metadata: dict):
-        # vec must be (dim, ) float32
+        return index, meta, index_path, meta_path
+
+    # ✅ doc_id is REQUIRED (no default None anymore)
+    def add(self, vec: np.ndarray, metadata: dict, doc_id: str):
+        if not doc_id:
+            raise ValueError("doc_id is required when adding vectors")
+
         if vec.dtype != np.float32:
-            vec = vec.astype('float32')
-        # id = current number of vectors
-        idx = self.index.ntotal
-        self.index.add(np.array([vec]).astype('float32'))
-        self.meta.append(metadata)
-        # persist
-        faiss.write_index(self.index, INDEX_PATH)
-        with open(META_PATH, "w", encoding="utf-8") as f:
-            json.dump(self.meta, f, ensure_ascii=False, indent=2)
-        return idx
+            vec = vec.astype("float32")
 
-    def search(self, vec: np.ndarray, top_k: int = 4):
-        if self.index.ntotal == 0:
+        if vec.shape[0] != EMBED_DIM:
+            raise ValueError(
+                f"Embedding length mismatch: {vec.shape[0]} vs {EMBED_DIM}"
+            )
+
+        index, meta, index_path, meta_path = self._load_index_and_meta(doc_id)
+
+        index.add(np.array([vec], dtype="float32"))
+        meta.append(metadata)
+
+        faiss.write_index(index, index_path)
+        with open(meta_path, "w", encoding="utf-8") as f:
+            json.dump(meta, f, ensure_ascii=False, indent=2)
+
+    def search(self, vec: np.ndarray, doc_id: str, top_k: int = 10):
+        if not doc_id:
+            raise ValueError("doc_id is required for searching")
+
+        index, meta, _, _ = self._load_index_and_meta(doc_id)
+
+        if index.ntotal == 0:
             return []
-        if vec.dtype != np.float32:
-            vec = vec.astype('float32')
-        D, I = self.index.search(np.array([vec]), top_k)
-        hits = []
-        for dist, idx in zip(D[0], I[0]):
-            if int(idx) < 0:
-                continue
-            hits.append({"score": float(dist), "meta": self.meta[int(idx)], "idx": int(idx)})
-        return hits
 
-# single global instance for demo
+        if vec.dtype != np.float32:
+            vec = vec.astype("float32")
+
+        D, I = index.search(np.array([vec], dtype="float32"), top_k)
+
+        results = []
+        for score, idx in zip(D[0], I[0]):
+            if idx < 0:
+                continue
+
+            results.append(
+                {
+                    "score": float(score),
+                    "meta": meta[int(idx)],
+                    "idx": int(idx),
+                }
+            )
+
+        return results
+
+
+# ✅ SINGLE GLOBAL INSTANCE
 vstore = SimpleVStore()

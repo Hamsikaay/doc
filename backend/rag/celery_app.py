@@ -19,6 +19,10 @@
 # # celery.conf.update(task_serializer='pickle', accept_content=['pickle', 'json', 'application/x-python-serialize'])
 from celery import Celery
 import os
+from logging_config import configure_logging 
+
+
+configure_logging()  
 
 BROKER = os.getenv("CELERY_BROKER_URL", "amqp://user:pass@localhost:5672//")
 BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")

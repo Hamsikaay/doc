@@ -471,8 +471,384 @@
 // ==========================
 // CONFIGURATION
 // ==========================
-const DEMO_MODE = false;  // use real backend
-const API_BASE = 'http://127.0.0.1:8000';
+// const DEMO_MODE = false;  // use real backend
+// const API_BASE = 'http://127.0.0.1:8000';
+
+// // ==========================
+// // STATE
+// // ==========================
+// let state = {
+//     token: null,
+//     user: null,
+//     files: [],
+//     selectedFile: null
+// };
+
+// // ==========================
+// // AUTH UI
+// // ==========================
+// function showSignup() {
+//     document.getElementById('loginForm').classList.add('hidden');
+//     document.getElementById('signupForm').classList.remove('hidden');
+// }
+
+// function showLogin() {
+//     document.getElementById('signupForm').classList.add('hidden');
+//     document.getElementById('loginForm').classList.remove('hidden');
+// }
+
+// async function handleSignup(e) {
+//     e.preventDefault();
+
+//     const name = document.getElementById("signupName").value;
+//     const email = document.getElementById("signupEmail").value;
+//     const password = document.getElementById("signupPassword").value;
+
+//     const res = await fetch(`${API_BASE}/auth/signup`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ name, email, password })
+//     });
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//         document.getElementById("signupError").textContent = data.detail;
+//         document.getElementById("signupError").classList.remove("hidden");
+//         return;
+//     }
+
+//     document.getElementById("signupSuccess").textContent = "Account created!";
+//     document.getElementById("signupSuccess").classList.remove("hidden");
+
+//     setTimeout(showLogin, 1500);
+// }
+
+// async function handleLogin(e) {
+//     e.preventDefault();
+
+//     const email = document.getElementById("loginEmail").value;
+//     const password = document.getElementById("loginPassword").value;
+
+//     const res = await fetch(`${API_BASE}/auth/login`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ email, password })
+//     });
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//         document.getElementById("loginError").textContent = data.detail;
+//         document.getElementById("loginError").classList.remove("hidden");
+//         return;
+//     }
+
+//     state.token = data.access_token;
+//     state.user = data.user;
+
+//     localStorage.setItem("token", data.access_token);
+//     localStorage.setItem("user", JSON.stringify(data.user));
+
+//     showMainApp();
+// }
+
+// // ==========================
+// // MAIN APP UI
+// // ==========================
+// function showMainApp() {
+//     document.getElementById('authView').classList.add('hidden');
+//     document.getElementById('mainApp').classList.remove('hidden');
+
+//     document.getElementById('userName').textContent = state.user?.name || 'User';
+//     document.getElementById('userAvatar').textContent = state.user?.name?.charAt(0).toUpperCase() || 'U';
+
+//     // Always render file list
+//     renderFiles();
+
+//     // Demo docs only if DEMO_MODE = true
+//     if (DEMO_MODE) {
+//         state.files = [
+//             { id: 1, name: 'Doc.pdf', size: '2.4 MB', date: 'Now', status: 'Indexed' }
+//         ];
+//         renderFiles();
+//     }
+// }
+
+// function handleLogout() {
+//     state.token = null;
+//     state.user = null;
+//     state.files = [];
+
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+
+//     document.getElementById('mainApp').classList.add('hidden');
+//     document.getElementById('authView').classList.remove('hidden');
+// }
+
+// // ==========================
+// // FILE UPLOAD
+// // ==========================
+// function handleFileSelect(e) {
+//     const file = e.target.files[0];
+//     if (file) {
+//         state.selectedFile = file;
+//         document.getElementById('selectedFile').textContent = `Selected: ${file.name}`;
+//         document.getElementById('selectedFile').classList.remove('hidden');
+//         document.getElementById('uploadBtn').disabled = false;
+//     }
+// }
+
+// async function handleUpload() {
+//     if (!state.selectedFile) return;
+
+//     const uploadBtn = document.getElementById('uploadBtn');
+//     uploadBtn.disabled = true;
+//     uploadBtn.textContent = 'Uploading...';
+
+//     try {
+//         const formData = new FormData();
+//         formData.append("file", state.selectedFile);
+
+//         const res = await fetch(`${API_BASE}/rag/upload`, {
+//             method: "POST",
+//             headers: {
+//                 "Authorization": `Bearer ${state.token}`
+//             },
+//             body: formData
+//         });
+
+//         const data = await res.json();
+
+//         if (!res.ok) {
+//             alert("Upload failed: " + (data.detail || JSON.stringify(data)));
+//             uploadBtn.disabled = false;
+//             uploadBtn.textContent = 'Upload Document';
+//             return;
+//         }
+
+//         addMessage('assistant', `Upload received. Processing… Task ID: ${data.task_id}`);
+
+//         const status = await pollTaskStatus(data.task_id);
+
+//         if (status.state === 'SUCCESS' && status.result) {
+//             const docInfo = status.result;
+
+//             state.files.unshift({
+//                 id: docInfo.doc_id || Date.now(),
+//                 name: state.selectedFile.name,
+//                 size: formatSize(state.selectedFile.size),
+//                 date: 'Just now',
+//                 status: 'Indexed'
+//             });
+
+//             renderFiles();
+//             addMessage('assistant', `Document processed and indexed.`);
+//         } else {
+//             addMessage('assistant', `Processing ended with status: ${status.state}`);
+//         }
+
+//         state.selectedFile = null;
+//         document.getElementById('selectedFile').classList.add('hidden');
+//         document.getElementById('fileInput').value = '';
+//         uploadBtn.textContent = 'Upload Document';
+//         uploadBtn.disabled = false;
+
+//     } catch (err) {
+//         console.error(err);
+//         alert('Upload error');
+//         uploadBtn.disabled = false;
+//         uploadBtn.textContent = 'Upload Document';
+//     }
+// }
+
+// async function pollTaskStatus(taskId, interval = 1500, timeout = 120000) {
+//     const start = Date.now();
+//     while (true) {
+//         const resp = await fetch(`${API_BASE}/rag/status/${taskId}`, {
+//             headers: { "Authorization": `Bearer ${state.token}` }
+//         });
+//         const payload = await resp.json();
+
+//         if (payload.state === 'SUCCESS' || payload.state === 'FAILURE') {
+//             return payload;
+//         }
+//         if (Date.now() - start > timeout) {
+//             return { state: 'TIMEOUT' };
+//         }
+//         await new Promise(res => setTimeout(res, interval));
+//     }
+// }
+
+// function renderFiles() {
+//     const filesList = document.getElementById('filesList');
+
+//     if (state.files.length === 0) {
+//         filesList.innerHTML = '<div style="color:#999;padding:10px;">No documents uploaded yet</div>';
+//         return;
+//     }
+
+//     filesList.innerHTML = state.files
+//         .map(file => `
+//         <div class="file-item">
+//             <div class="file-icon">📄</div>
+//             <div class="file-info">
+//                 <div class="file-name">${file.name}</div>
+//                 <div class="file-meta">${file.size} • ${file.date}</div>
+//             </div>
+//             <div class="status-badge">${file.status || "Processing"}</div>
+//         </div>
+//     `)
+//         .join('');
+// }
+
+// // ==========================
+// // CHAT / QUERY
+// // ==========================
+// async function handleSendMessage() {
+//     const input = document.getElementById('chatInput');
+//     const question = input.value.trim();
+//     if (!question) return;
+
+//     addMessage('user', question);
+//     input.value = '';
+//     input.style.height = 'auto';
+//     document.getElementById('sendBtn').disabled = true;
+
+//     try {
+//         const res = await fetch(`${API_BASE}/rag/query`, {
+//             method: 'POST',
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Authorization": `Bearer ${state.token}`
+//             },
+//             body: JSON.stringify({ question })
+//         });
+
+//         const data = await res.json();
+
+//         if (!res.ok) {
+//             addMessage('assistant', 'Error: ' + (data.detail || JSON.stringify(data)));
+//             return;
+//         }
+
+//         addMessage('assistant', data.answer || "No answer returned.");
+
+//         if (data.hits && data.hits.length) {
+//             data.hits.forEach(hit => {
+//                 const meta = hit.meta || {};
+//                 const preview = meta.text_preview || "...";
+
+//                 const messages = document.getElementById('messages');
+//                 const provDiv = document.createElement('div');
+//                 provDiv.className = 'message assistant';
+//                 provDiv.innerHTML = `
+//                     <div class="message-avatar">🔎</div>
+//                     <div class="message-content">
+//                         <strong>Source:</strong> ${meta.doc_id}<br>
+//                         ${preview}<br>
+//                         <a href="#" data-doc="${meta.doc_id}" data-idx="${meta.chunk_index}" class="view-chunk">View full chunk</a>
+//                     </div>
+//                 `;
+//                 messages.appendChild(provDiv);
+//                 messages.scrollTop = messages.scrollHeight;
+//             });
+
+//             document.querySelectorAll('.view-chunk').forEach(el => {
+//                 el.addEventListener('click', async (e) => {
+//                     e.preventDefault();
+//                     const doc = el.dataset.doc;
+//                     const idx = el.dataset.idx;
+
+//                     const chunkResp = await fetch(`${API_BASE}/rag/chunk/${doc}/${idx}`, {
+//                         headers: { "Authorization": `Bearer ${state.token}` }
+//                     });
+//                     const chunkData = await chunkResp.json();
+
+//                     addMessage('assistant',
+//                         `Source (${doc}/${idx}):\n\n${chunkData.text || "No text found"}`
+//                     );
+//                 });
+//             });
+//         }
+
+//     } catch (e) {
+//         console.error(e);
+//         addMessage('assistant', "Error while querying.");
+//     } finally {
+//         document.getElementById('sendBtn').disabled = false;
+//     }
+// }
+
+// // ==========================
+// // UI HELPERS
+// // ==========================
+// function addMessage(type, content) {
+//     const messages = document.getElementById('messages');
+//     const messageDiv = document.createElement('div');
+//     messageDiv.className = `message ${type}`;
+
+//     const avatar = document.createElement('div');
+//     avatar.className = 'message-avatar';
+//     avatar.textContent =
+//         type === 'user'
+//             ? (state.user?.name?.charAt(0).toUpperCase() || "U")
+//             : '✨';
+
+//     const contentDiv = document.createElement('div');
+//     contentDiv.className = 'message-content';
+//     contentDiv.textContent = content;
+
+//     messageDiv.appendChild(avatar);
+//     messageDiv.appendChild(contentDiv);
+//     messages.appendChild(messageDiv);
+//     messages.scrollTop = messages.scrollHeight;
+// }
+
+// function formatSize(bytes) {
+//     if (bytes === 0) return '0 Bytes';
+//     const k = 1024;
+//     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+//     const i = Math.floor(Math.log(bytes) / Math.log(k));
+//     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+// }
+
+// // ==========================
+// // STARTUP
+// // ==========================
+// document.addEventListener('DOMContentLoaded', () => {
+//     console.log("Knowledge Assistant loaded.");
+
+//     const savedToken = localStorage.getItem("token");
+//     const savedUser = localStorage.getItem("user");
+
+//     if (savedToken && savedUser) {
+//         state.token = savedToken;
+//         state.user = JSON.parse(savedUser);
+//         showMainApp();
+//     }
+
+//     const chatInput = document.getElementById('chatInput');
+//     if (chatInput) {
+//         chatInput.addEventListener('keydown', (e) => {
+//             if (e.key === 'Enter' && !e.shiftKey) {
+//                 e.preventDefault();
+//                 handleSendMessage();
+//             }
+//         });
+
+//         chatInput.addEventListener('input', function () {
+//             this.style.height = 'auto';
+//             this.style.height = this.scrollHeight + 'px';
+//         });
+//     }
+// });
+
+
+const DEMO_MODE = false;
+const API_BASE = "http://localhost:8000";
+
 
 // ==========================
 // STATE
@@ -481,11 +857,12 @@ let state = {
     token: null,
     user: null,
     files: [],
-    selectedFile: null
+    selectedFile: null,
+    activeDocId: null   // ✅ CURRENTLY SELECTED DOCUMENT
 };
 
 // ==========================
-// AUTH UI
+// AUTH
 // ==========================
 function showSignup() {
     document.getElementById('loginForm').classList.add('hidden');
@@ -500,9 +877,9 @@ function showLogin() {
 async function handleSignup(e) {
     e.preventDefault();
 
-    const name = document.getElementById("signupName").value;
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
+    const name = signupName.value;
+    const email = signupEmail.value;
+    const password = signupPassword.value;
 
     const res = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
@@ -513,22 +890,21 @@ async function handleSignup(e) {
     const data = await res.json();
 
     if (!res.ok) {
-        document.getElementById("signupError").textContent = data.detail;
-        document.getElementById("signupError").classList.remove("hidden");
+        signupError.textContent = data.detail;
+        signupError.classList.remove("hidden");
         return;
     }
 
-    document.getElementById("signupSuccess").textContent = "Account created!";
-    document.getElementById("signupSuccess").classList.remove("hidden");
-
+    signupSuccess.textContent = "Account created!";
+    signupSuccess.classList.remove("hidden");
     setTimeout(showLogin, 1500);
 }
 
 async function handleLogin(e) {
     e.preventDefault();
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+    const email = loginEmail.value;
+    const password = loginPassword.value;
 
     const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
@@ -539,52 +915,39 @@ async function handleLogin(e) {
     const data = await res.json();
 
     if (!res.ok) {
-        document.getElementById("loginError").textContent = data.detail;
-        document.getElementById("loginError").classList.remove("hidden");
+        loginError.textContent = data.detail;
+        loginError.classList.remove("hidden");
         return;
     }
 
     state.token = data.access_token;
     state.user = data.user;
 
-    localStorage.setItem("token", data.access_token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", state.token);
+    localStorage.setItem("user", JSON.stringify(state.user));
 
     showMainApp();
 }
 
 // ==========================
-// MAIN APP UI
+// MAIN UI
 // ==========================
 function showMainApp() {
-    document.getElementById('authView').classList.add('hidden');
-    document.getElementById('mainApp').classList.remove('hidden');
+    authView.classList.add('hidden');
+    mainApp.classList.remove('hidden');
 
-    document.getElementById('userName').textContent = state.user?.name || 'User';
-    document.getElementById('userAvatar').textContent = state.user?.name?.charAt(0).toUpperCase() || 'U';
+    userName.textContent = state.user?.name || "User";
+    userAvatar.textContent = state.user?.name?.charAt(0).toUpperCase() || "U";
 
-    // Always render file list
     renderFiles();
-
-    // Demo docs only if DEMO_MODE = true
-    if (DEMO_MODE) {
-        state.files = [
-            { id: 1, name: 'Doc.pdf', size: '2.4 MB', date: 'Now', status: 'Indexed' }
-        ];
-        renderFiles();
-    }
 }
 
 function handleLogout() {
-    state.token = null;
-    state.user = null;
-    state.files = [];
+    state = { token: null, user: null, files: [], selectedFile: null, activeDocId: null };
+    localStorage.clear();
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    document.getElementById('mainApp').classList.add('hidden');
-    document.getElementById('authView').classList.remove('hidden');
+    mainApp.classList.add("hidden");
+    authView.classList.remove("hidden");
 }
 
 // ==========================
@@ -592,256 +955,163 @@ function handleLogout() {
 // ==========================
 function handleFileSelect(e) {
     const file = e.target.files[0];
-    if (file) {
-        state.selectedFile = file;
-        document.getElementById('selectedFile').textContent = `Selected: ${file.name}`;
-        document.getElementById('selectedFile').classList.remove('hidden');
-        document.getElementById('uploadBtn').disabled = false;
-    }
+    if (!file) return;
+
+    state.selectedFile = file;
+    selectedFile.textContent = `Selected: ${file.name}`;
+    selectedFile.classList.remove("hidden");
+    uploadBtn.disabled = false;
 }
 
 async function handleUpload() {
     if (!state.selectedFile) return;
 
-    const uploadBtn = document.getElementById('uploadBtn');
     uploadBtn.disabled = true;
-    uploadBtn.textContent = 'Uploading...';
+    uploadBtn.textContent = "Uploading...";
 
-    try {
-        const formData = new FormData();
-        formData.append("file", state.selectedFile);
+    const formData = new FormData();
+    formData.append("file", state.selectedFile);
 
-        const res = await fetch(`${API_BASE}/rag/upload`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${state.token}`
-            },
-            body: formData
-        });
+    const res = await fetch(`${API_BASE}/rag/upload`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${state.token}` },
+        body: formData
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!res.ok) {
-            alert("Upload failed: " + (data.detail || JSON.stringify(data)));
-            uploadBtn.disabled = false;
-            uploadBtn.textContent = 'Upload Document';
-            return;
-        }
-
-        addMessage('assistant', `Upload received. Processing… Task ID: ${data.task_id}`);
-
-        const status = await pollTaskStatus(data.task_id);
-
-        if (status.state === 'SUCCESS' && status.result) {
-            const docInfo = status.result;
-
-            state.files.unshift({
-                id: docInfo.doc_id || Date.now(),
-                name: state.selectedFile.name,
-                size: formatSize(state.selectedFile.size),
-                date: 'Just now',
-                status: 'Indexed'
-            });
-
-            renderFiles();
-            addMessage('assistant', `Document processed and indexed.`);
-        } else {
-            addMessage('assistant', `Processing ended with status: ${status.state}`);
-        }
-
-        state.selectedFile = null;
-        document.getElementById('selectedFile').classList.add('hidden');
-        document.getElementById('fileInput').value = '';
-        uploadBtn.textContent = 'Upload Document';
+    if (!res.ok) {
+        alert(data.detail);
+        uploadBtn.textContent = "Upload Document";
         uploadBtn.disabled = false;
-
-    } catch (err) {
-        console.error(err);
-        alert('Upload error');
-        uploadBtn.disabled = false;
-        uploadBtn.textContent = 'Upload Document';
-    }
-}
-
-async function pollTaskStatus(taskId, interval = 1500, timeout = 120000) {
-    const start = Date.now();
-    while (true) {
-        const resp = await fetch(`${API_BASE}/rag/status/${taskId}`, {
-            headers: { "Authorization": `Bearer ${state.token}` }
-        });
-        const payload = await resp.json();
-
-        if (payload.state === 'SUCCESS' || payload.state === 'FAILURE') {
-            return payload;
-        }
-        if (Date.now() - start > timeout) {
-            return { state: 'TIMEOUT' };
-        }
-        await new Promise(res => setTimeout(res, interval));
-    }
-}
-
-function renderFiles() {
-    const filesList = document.getElementById('filesList');
-
-    if (state.files.length === 0) {
-        filesList.innerHTML = '<div style="color:#999;padding:10px;">No documents uploaded yet</div>';
         return;
     }
 
-    filesList.innerHTML = state.files
-        .map(file => `
-        <div class="file-item">
-            <div class="file-icon">📄</div>
-            <div class="file-info">
-                <div class="file-name">${file.name}</div>
-                <div class="file-meta">${file.size} • ${file.date}</div>
-            </div>
-            <div class="status-badge">${file.status || "Processing"}</div>
-        </div>
-    `)
-        .join('');
+    const status = await pollTaskStatus(data.task_id);
+
+    if (status.state === "SUCCESS") {
+        state.files.unshift({
+            id: status.result.doc_id,
+            name: state.selectedFile.name,
+            size: formatSize(state.selectedFile.size),
+            date: "Just now",
+            status: "Indexed"
+        });
+
+        // ✅ Auto-select newly uploaded document
+        state.activeDocId = status.result.doc_id;
+        renderFiles();
+        addMessage("assistant", "Document indexed and selected.");
+    }
+
+    selectedFile.classList.add("hidden");
+    fileInput.value = "";
+    uploadBtn.textContent = "Upload Document";
+    uploadBtn.disabled = false;
+    state.selectedFile = null;
+}
+
+async function pollTaskStatus(taskId) {
+    while (true) {
+        const res = await fetch(`${API_BASE}/rag/status/${taskId}`);
+        const data = await res.json();
+        if (data.state === "SUCCESS" || data.state === "FAILURE") return data;
+        await new Promise(r => setTimeout(r, 1500));
+    }
+}
+
+// ==========================
+// FILE LIST + SELECTION
+// ==========================
+function renderFiles() {
+    filesList.innerHTML = "";
+
+    state.files.forEach(file => {
+        const div = document.createElement("div");
+        div.className = "file-item";
+
+        if (file.id === state.activeDocId) {
+            div.style.background = "#dbeafe";
+        }
+
+        div.innerHTML = `
+          <div class="file-icon">📄</div>
+          <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-meta">${file.size} • ${file.date}</div>
+          </div>
+          <div class="status-badge">${file.status}</div>
+        `;
+
+        div.onclick = () => {
+            state.activeDocId = file.id;
+            renderFiles();
+            addMessage("assistant", `Selected document: ${file.name}`);
+        };
+
+        filesList.appendChild(div);
+    });
 }
 
 // ==========================
 // CHAT / QUERY
 // ==========================
 async function handleSendMessage() {
-    const input = document.getElementById('chatInput');
-    const question = input.value.trim();
+    const question = chatInput.value.trim();
     if (!question) return;
 
-    addMessage('user', question);
-    input.value = '';
-    input.style.height = 'auto';
-    document.getElementById('sendBtn').disabled = true;
-
-    try {
-        const res = await fetch(`${API_BASE}/rag/query`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${state.token}`
-            },
-            body: JSON.stringify({ question })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            addMessage('assistant', 'Error: ' + (data.detail || JSON.stringify(data)));
-            return;
-        }
-
-        addMessage('assistant', data.answer || "No answer returned.");
-
-        if (data.hits && data.hits.length) {
-            data.hits.forEach(hit => {
-                const meta = hit.meta || {};
-                const preview = meta.text_preview || "...";
-
-                const messages = document.getElementById('messages');
-                const provDiv = document.createElement('div');
-                provDiv.className = 'message assistant';
-                provDiv.innerHTML = `
-                    <div class="message-avatar">🔎</div>
-                    <div class="message-content">
-                        <strong>Source:</strong> ${meta.doc_id}<br>
-                        ${preview}<br>
-                        <a href="#" data-doc="${meta.doc_id}" data-idx="${meta.chunk_index}" class="view-chunk">View full chunk</a>
-                    </div>
-                `;
-                messages.appendChild(provDiv);
-                messages.scrollTop = messages.scrollHeight;
-            });
-
-            document.querySelectorAll('.view-chunk').forEach(el => {
-                el.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const doc = el.dataset.doc;
-                    const idx = el.dataset.idx;
-
-                    const chunkResp = await fetch(`${API_BASE}/rag/chunk/${doc}/${idx}`, {
-                        headers: { "Authorization": `Bearer ${state.token}` }
-                    });
-                    const chunkData = await chunkResp.json();
-
-                    addMessage('assistant',
-                        `Source (${doc}/${idx}):\n\n${chunkData.text || "No text found"}`
-                    );
-                });
-            });
-        }
-
-    } catch (e) {
-        console.error(e);
-        addMessage('assistant', "Error while querying.");
-    } finally {
-        document.getElementById('sendBtn').disabled = false;
+    if (!state.activeDocId) {
+        addMessage("assistant", "❌ Please select a document first.");
+        return;
     }
+
+    addMessage("user", question);
+    chatInput.value = "";
+
+    const res = await fetch(`${API_BASE}/rag/query`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${state.token}`
+        },
+        body: JSON.stringify({
+            question,
+            doc_id: state.activeDocId   // ✅ IMPORTANT
+        })
+    });
+
+    const data = await res.json();
+    addMessage("assistant", data.answer || "No answer found.");
 }
 
 // ==========================
-// UI HELPERS
+// HELPERS
 // ==========================
 function addMessage(type, content) {
-    const messages = document.getElementById('messages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${type}`;
+    const div = document.createElement("div");
+    div.className = `message ${type}`;
 
-    const avatar = document.createElement('div');
-    avatar.className = 'message-avatar';
-    avatar.textContent =
-        type === 'user'
-            ? (state.user?.name?.charAt(0).toUpperCase() || "U")
-            : '✨';
+    div.innerHTML = `
+      <div class="message-avatar">${type === "user" ? "👤" : "✨"}</div>
+      <div class="message-content">${content}</div>
+    `;
 
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    contentDiv.textContent = content;
-
-    messageDiv.appendChild(avatar);
-    messageDiv.appendChild(contentDiv);
-    messages.appendChild(messageDiv);
+    messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
 }
 
 function formatSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    return (bytes / k / k).toFixed(2) + " MB";
 }
 
 // ==========================
-// STARTUP
+// AUTO LOGIN
 // ==========================
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Knowledge Assistant loaded.");
+document.addEventListener("DOMContentLoaded", () => {
+    state.token = localStorage.getItem("token");
+    state.user = JSON.parse(localStorage.getItem("user"));
 
-    const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
-
-    if (savedToken && savedUser) {
-        state.token = savedToken;
-        state.user = JSON.parse(savedUser);
-        showMainApp();
-    }
-
-    const chatInput = document.getElementById('chatInput');
-    if (chatInput) {
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-            }
-        });
-
-        chatInput.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-    }
+    if (state.token && state.user) showMainApp();
 });
 

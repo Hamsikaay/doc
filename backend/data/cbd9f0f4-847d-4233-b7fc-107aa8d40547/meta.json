@@ -1,0 +1,30 @@
+[
+  {
+    "doc_id": "cbd9f0f4-847d-4233-b7fc-107aa8d40547",
+    "filename": "Codeforces_100_Problems.pdf",
+    "chunk_index": 0,
+    "text_preview": "ﬁ\n100 Codeforces Problems (800  900 Rated)\nThis document contains a curated list of 100 Codeforces problems (mostly rated 800, some near\n900). These are designed to help beginners practice C++ with vectors, arrays, strings, sets, maps,\nand other common data structures. Problems are grouped by topic for structured learning.\nVectors & Arrays\n1 69A - Young Physicist\n2 116A - Tram\n3 160A - Twins\n4 158",
+    "text": "ﬁ\n100 Codeforces Problems (800  900 Rated)\nThis document contains a curated list of 100 Codeforces problems (mostly rated 800, some near\n900). These are designed to help beginners practice C++ with vectors, arrays, strings, sets, maps,\nand other common data structures. Problems are grouped by topic for structured learning.\nVectors & Arrays\n1 69A - Young Physicist\n2 116A - Tram\n3 160A - Twins\n4 158A - Next Round\n5 228A - Is your horseshoe on the other hoof?\n6 381A - Sereja and Dima\n7 734B - Anton and Digits\n8 1409A - Yet Another Two Integers Problem\n9 1472B - Fair Division\n10 1760A - Medium Number\nStrings\n1 41A - Translation\n2 96A - Football\n3 208A - Dubstep\n4 58A - Chat room\n5 141A - Amusing Joke\n6 110A - Nearly Lucky Number\n7 116A - Petya and Strings\n8 758A - Holiday Of Equality\n9 705A - Hulk\n10 4A - Watermelon\nSets & Maps\n1 443A - Anton and Letters\n2 236A - Boy or Girl\n3 520A - Pangram\n4 785A - Anton and Polyhedrons\n5 931A - Friends Meeting\n6 977A - Wrong Subtraction\n7 1030A - In Sea"
+  },
+  {
+    "doc_id": "cbd9f0f4-847d-4233-b7fc-107aa8d40547",
+    "filename": "Codeforces_100_Problems.pdf",
+    "chunk_index": 1,
+    "text_preview": "Hulk\n10 4A - Watermelon\nSets & Maps\n1 443A - Anton and Letters\n2 236A - Boy or Girl\n3 520A - Pangram\n4 785A - Anton and Polyhedrons\n5 931A - Friends Meeting\n6 977A - Wrong Subtraction\n7 1030A - In Search of an Easy Problem\n8 1165A - Remainder\n9 1703A - YES or YES?\n10 1722A - Spell Check\nGreedy / Sorting\n1 339A - Helpful Maths\n2 144A - Arrival of the General\n3 230A - Dragons\n4 451A - Game With Stic",
+    "text": "Hulk\n10 4A - Watermelon\nSets & Maps\n1 443A - Anton and Letters\n2 236A - Boy or Girl\n3 520A - Pangram\n4 785A - Anton and Polyhedrons\n5 931A - Friends Meeting\n6 977A - Wrong Subtraction\n7 1030A - In Search of an Easy Problem\n8 1165A - Remainder\n9 1703A - YES or YES?\n10 1722A - Spell Check\nGreedy / Sorting\n1 339A - Helpful Maths\n2 144A - Arrival of the General\n3 230A - Dragons\n4 451A - Game With Sticks\n5 271A - Beautiful Year\n6 492A - Vanya and Cubes\n7 271B - Prime Matrix\n8 155A - I_love_%username%\n9 1335A - Candies and Two Sisters\n10 1352A - Sum of Round Numbers\nMath & Logic\n1 122A - Lucky Division\n2 148A - Insomnia cure\n3 472A - Design Tutorial: Learn from Math\n4 746A - Compote\n5 734A - Anton and Danik\n6 71A - Way Too Long Words\n7 200B - Drinks\n8 263A - Beautiful Matrix\n9 318A - Even Odds\n10 617A - Elephant\nExtra 800/900 Practice\n1 339B - Xenia and Ringroad\n2 540A - Combination Lock\n3 705A - Hulk\n4 61A - Ultra-Fast Mathematician\n5 520B - Two Buttons\n6 546A - Soldier and Bananas\n7 758B -"
+  },
+  {
+    "doc_id": "cbd9f0f4-847d-4233-b7fc-107aa8d40547",
+    "filename": "Codeforces_100_Problems.pdf",
+    "chunk_index": 2,
+    "text_preview": "0 617A - Elephant\nExtra 800/900 Practice\n1 339B - Xenia and Ringroad\n2 540A - Combination Lock\n3 705A - Hulk\n4 61A - Ultra-Fast Mathematician\n5 520B - Two Buttons\n6 546A - Soldier and Bananas\n7 758B - Blown Garland\n8 71B - Progress Bar\n9 732A - Buy a Shovel\n10 1146A - Love A\nAdditional Practice Problems\n1 69A - Young Physicist\n2 116A - Tram\n3 160A - Twins\n4 158A - Next Round\n5 228A - Is your horse",
+    "text": "0 617A - Elephant\nExtra 800/900 Practice\n1 339B - Xenia and Ringroad\n2 540A - Combination Lock\n3 705A - Hulk\n4 61A - Ultra-Fast Mathematician\n5 520B - Two Buttons\n6 546A - Soldier and Bananas\n7 758B - Blown Garland\n8 71B - Progress Bar\n9 732A - Buy a Shovel\n10 1146A - Love A\nAdditional Practice Problems\n1 69A - Young Physicist\n2 116A - Tram\n3 160A - Twins\n4 158A - Next Round\n5 228A - Is your horseshoe on the other hoof?\n6 381A - Sereja and Dima\n7 734B - Anton and Digits\n8 1409A - Yet Another Two Integers Problem\n9 1472B - Fair Division\n10 1760A - Medium Number\n11 41A - Translation\n12 96A - Football\n13 208A - Dubstep\n14 58A - Chat room\n15 141A - Amusing Joke\n16 110A - Nearly Lucky Number\n17 116A - Petya and Strings\n18 758A - Holiday Of Equality\n19 705A - Hulk\n20 4A - Watermelon\n21 443A - Anton and Letters\n22 236A - Boy or Girl\n23 520A - Pangram\n24 785A - Anton and Polyhedrons\n25 931A - Friends Meeting\n26 977A - Wrong Subtraction\n27 1030A - In Search of an Easy Problem\n28 1165A - Remaind"
+  },
+  {
+    "doc_id": "cbd9f0f4-847d-4233-b7fc-107aa8d40547",
+    "filename": "Codeforces_100_Problems.pdf",
+    "chunk_index": 3,
+    "text_preview": "ton and Letters\n22 236A - Boy or Girl\n23 520A - Pangram\n24 785A - Anton and Polyhedrons\n25 931A - Friends Meeting\n26 977A - Wrong Subtraction\n27 1030A - In Search of an Easy Problem\n28 1165A - Remainder\n29 1703A - YES or YES?\n30 1722A - Spell Check\n31 339A - Helpful Maths\n32 144A - Arrival of the General\n33 230A - Dragons\n34 451A - Game With Sticks\n35 271A - Beautiful Year\n36 492A - Vanya and Cube",
+    "text": "ton and Letters\n22 236A - Boy or Girl\n23 520A - Pangram\n24 785A - Anton and Polyhedrons\n25 931A - Friends Meeting\n26 977A - Wrong Subtraction\n27 1030A - In Search of an Easy Problem\n28 1165A - Remainder\n29 1703A - YES or YES?\n30 1722A - Spell Check\n31 339A - Helpful Maths\n32 144A - Arrival of the General\n33 230A - Dragons\n34 451A - Game With Sticks\n35 271A - Beautiful Year\n36 492A - Vanya and Cubes\n37 271B - Prime Matrix\n38 155A - I_love_%username%\n39 1335A - Candies and Two Sisters\n40 1352A - Sum of Round Numbers\n"
+  }
+]

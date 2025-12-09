@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "backend"
+    static_configs:
+      - targets: ["backend:8000"] # backend service name
+    metrics_path: /metrics
+
+  - job_name: "celery_worker"
+    static_configs:
+      - targets: ["worker:9100"] # worker metrics server
+
+  - job_name: "logstash"
+    static_configs:
+      - targets: ["logstash:9600"]

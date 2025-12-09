@@ -2,10 +2,18 @@ fastapi==0.95.2
 uvicorn[standard]==0.22.0
 celery==5.3.1
 redis==4.5.5
-faiss-cpu
-numpy==1.26.0
+faiss-cpu==1.7.4
+numpy==1.26.4
 sqlalchemy==2.0.20
 pdfplumber==0.7.6
 python-multipart==0.0.6
 pydantic==1.10.11
+huggingface_hub
+python-dotenv
+pymupdf
+email-validator
+passlib[bcrypt]
+python-jose[cryptography]
+prometheus-client
+prometheus-fastapi-instrumentator
 # optional; used if you swap in real embeddings

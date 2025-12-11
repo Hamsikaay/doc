@@ -1,0 +1,26 @@
+[
+  {
+    "doc_id": "6eb3fa67-20d1-4c59-8924-363a1728819b",
+    "chunk_index": 0,
+    "filename": "IPC code.txt",
+    "text": "public class MsgQueue {\r\n    private String msg ; \r\n    boolean empty = true;\r\npublic synchronized String getMsg() {\r\n    if(empty != false)\r\n    {\r\n        try {\r\n            wait();\r\n        } catch (InterruptedException e) {\r\n            // TODO Auto-generated catch block\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n    for (int i = 0; i < 1000; i++) {\r\n        \r\n    }\r\n    System.out.println(\"[Consumer] recvd\"+msg);\r\n    empty = true;\r\n    notify();\r\n    return msg;\r\n}\r\npublic synchronized void setMsg(String msg) {\r\n\r\n    if(empty == true)\r\n    { \r\n        for (int i = 0; i < 1000; i++) {}\r\n       this.msg = msg;\r\n       System.out.println(\"[Producer] sent\"+msg);\r\n       empty = false;\r\n      notify();\r\n    }\r\n try {\r\n    wait();\r\n} catch (InterruptedException e) {\r\n    // TODO Auto-generated catch block\r\n    e.printStackTrace();\r\n}    \r\n\r\n\r\n \r\n}\r\n}\r\n&&&&&&&&&&&&&&&&\r\nclass Consumer implements Runnable {\r\n    MsgQueue msg;\r\n    Consumer(MsgQueue s)\r\n    {\r\n        this.msg "
+  },
+  {
+    "doc_id": "6eb3fa67-20d1-4c59-8924-363a1728819b",
+    "chunk_index": 1,
+    "filename": "IPC code.txt",
+    "text": " Auto-generated catch block\r\n    e.printStackTrace();\r\n}    \r\n\r\n\r\n \r\n}\r\n}\r\n&&&&&&&&&&&&&&&&\r\nclass Consumer implements Runnable {\r\n    MsgQueue msg;\r\n    Consumer(MsgQueue s)\r\n    {\r\n        this.msg = s;\r\n    }\r\n    @Override\r\n    public void run() {\r\n        for (int i = 0; i < 10; i++) {\r\n            msg.getMsg();\r\n        }\r\n        \r\n}\r\n}\r\nclass Producer implements Runnable \r\n{\r\n    MsgQueue msg;\r\n    Producer(MsgQueue s)\r\n    {\r\n        this.msg = s;\r\n    }\r\n    @Override\r\n    public void run() {\r\n    for (int i = 0; i < 10; i++) {\r\n         msg.setMsg(i+\"\");\r\n    }\r\n     \r\n    }\r\n}\r\n&&&&&&&&&&&&&&&&\r\npublic class PC {\r\n    public static void main(String[] args) {\r\n        MsgQueue m = new MsgQueue();\r\n        Producer p = new Producer(m);\r\n        Consumer c = new Consumer(m);\r\n        Thread t1 = new Thread(p);\r\n        Thread t2 = new Thread(c);\r\n        t1.start();\r\n        t2.start();\r\n    }\r\n}\r\n&&&&&&&&&&&&&&&&\r\npublic class g implements Runnable{\r\n    @Override\r\n    public"
+  },
+  {
+    "doc_id": "6eb3fa67-20d1-4c59-8924-363a1728819b",
+    "chunk_index": 2,
+    "filename": "IPC code.txt",
+    "text": "    Thread t1 = new Thread(p);\r\n        Thread t2 = new Thread(c);\r\n        t1.start();\r\n        t2.start();\r\n    }\r\n}\r\n&&&&&&&&&&&&&&&&\r\npublic class g implements Runnable{\r\n    @Override\r\n    public void run() {\r\n       \r\n        m2();\r\n       \r\n    }\r\n\r\n  \r\n     private static synchronized void m2() {\r\n       for (int i =200; i < 300; i++) {\r\n        try {\r\n            Thread.sleep(1000);\r\n        } catch (InterruptedException e) {\r\n            // TODO Auto-generated catch block\r\n            e.printStackTrace();\r\n        }\r\n        System.out.println(Thread.currentThread().getName()+i+ \" m2 called\");\r\n       }\r\n    }\r\n   \r\n}\r\n&&&&&&&&&&&&&&&\r\npublic class gtest {\r\n    public static void main(String[] args) {\r\n        g d = new g();\r\n        Thread t1 = new Thread(d,\"t1\");\r\n        Thread t2 = new Thread(d, \"t2\");\r\n        t1.start();\r\n        t2.start();\r\n    }\r\n}\r\n&&&&&&&&&\r\npublic class Producer {\r\n    \r\n}\r\n\r\n"
+  },
+  {
+    "doc_id": "6eb3fa67-20d1-4c59-8924-363a1728819b",
+    "chunk_index": 3,
+    "filename": "IPC code.txt",
+    "text": "d t2 = new Thread(d, \"t2\");\r\n        t1.start();\r\n        t2.start();\r\n    }\r\n}\r\n&&&&&&&&&\r\npublic class Producer {\r\n    \r\n}\r\n\r\n"
+  }
+]

@@ -83,12 +83,30 @@ async function handleLogin(e) {
 // ==========================
 // MAIN UI
 // ==========================
-function showMainApp() {
+async function showMainApp() {
   authView.classList.add("hidden");
   mainApp.classList.remove("hidden");
 
   userName.textContent = state.user?.name || "User";
   userAvatar.textContent = state.user?.name?.charAt(0).toUpperCase() || "U";
+
+  async function loadUserDocuments() {
+  const res = await fetch(`${API_BASE}/rag/documents/list`, {
+    headers: { Authorization: `Bearer ${state.token}` }
+  });
+
+  const backendFiles = await res.json();
+
+  // Normalize document format so UI works correctly
+  state.files = backendFiles.map(f => ({
+    id: f.doc_id,
+    name: f.filename,
+    size: "",
+    date: "",
+    status: "Indexed"
+  }));
+}
+await loadUserDocuments();
 
   renderFiles();
 }
@@ -121,6 +139,7 @@ function handleFileSelect(e) {
 }
 
 async function handleUpload() {
+  // e.preventDefault();
   if (!state.selectedFile) return;
 
   uploadBtn.disabled = true;
@@ -157,7 +176,8 @@ async function handleUpload() {
     });
 
     // ✅ Auto-select newly uploaded document
-    state.activeDocId = status.result.doc_id;
+    // state.activeDocId = status.result.doc_id;
+    state.activeDocId = data.doc_id;
     renderFiles();
     addMessage("assistant", "Document indexed and selected.");
   }
@@ -177,6 +197,96 @@ async function pollTaskStatus(taskId) {
     await new Promise((r) => setTimeout(r, 1500));
   }
 }
+
+/* ============================================
+   FIX 2 & 3 (COMMENTED OUT):
+   ============================================
+
+// FIX 3: handleUpload with try-catch-finally
+async function handleUpload() {
+  if (!state.selectedFile) return;
+
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = "Uploading...";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", state.selectedFile);
+
+    const res = await fetch(`${API_BASE}/rag/upload`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${state.token}` },
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || "Upload failed");
+      return;
+    }
+
+    const status = await pollTaskStatus(data.task_id);
+
+    if (status.state === "SUCCESS") {
+      const docId = data.doc_id;
+      state.files.unshift({
+        id: docId,
+        name: state.selectedFile.name,
+        size: formatSize(state.selectedFile.size),
+        date: "Just now",
+        status: "Indexed",
+      });
+
+      state.activeDocId = status.result?.doc_id || docId;
+      renderFiles();
+      addMessage("assistant", "Document indexed and selected.");
+    } else if (status.state === "FAILURE") {
+      alert(status.error || "Document processing failed");
+      addMessage("assistant", "❌ Document processing failed.");
+    }
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("An error occurred during upload. Please try again.");
+    addMessage("assistant", "❌ Upload failed. Please try again.");
+  } finally {
+    selectedFile.classList.add("hidden");
+    fileInput.value = "";
+    uploadBtn.textContent = "Upload Document";
+    uploadBtn.disabled = false;
+    state.selectedFile = null;
+  }
+}
+
+// FIX 2: pollTaskStatus with error handling and max retries
+async function pollTaskStatus(taskId) {
+  const maxRetries = 60;
+  let retries = 0;
+  
+  while (retries < maxRetries) {
+    try {
+      const res = await fetch(`${API_BASE}/rag/status/${taskId}`);
+      if (!res.ok) {
+        console.error("Poll status error:", res.status);
+        retries++;
+        await new Promise((r) => setTimeout(r, 1500));
+        continue;
+      }
+      const data = await res.json();
+      if (data.state === "SUCCESS" || data.state === "FAILURE") return data;
+      await new Promise((r) => setTimeout(r, 1500));
+      retries++;
+    } catch (error) {
+      console.error("Poll fetch error:", error);
+      retries++;
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+  }
+  
+  return { state: "FAILURE", error: "Polling timed out" };
+}
+
+============================================ */
 
 // ==========================
 // FILE LIST + SELECTION
@@ -312,37 +422,74 @@ document.addEventListener("DOMContentLoaded", () => {
 //     addMessage("assistant", "🗑 File deleted (UI only).");
 // }
 
+// function renderFiles() {
+//   filesList.innerHTML = "";
+
+//   state.files.forEach((file) => {
+//     const div = document.createElement("div");
+//     div.className = "file-item";
+
+//     if (file.id === state.activeDocId) {
+//       div.style.background = "#dbeafe";
+//     }
+
+//     // ✅ Entire click handling is now in HTML itself
+//     div.innerHTML = `
+//         <div class="file-icon">📄</div>
+  
+//         <div class="file-info" onclick="selectFile('${file.id}')">
+//           <div class="file-name">${file.name}</div>
+//           <div class="file-meta">${file.size} • ${file.date}</div>
+//         </div>
+  
+//         <div class="status-badge">${file.status}</div>
+  
+//         <button class="delete-btn" onclick="deleteFile('${file.id}')">🗑</button>
+//       `;
+
+//     filesList.appendChild(div);
+//   });
+// }
+
 function renderFiles() {
+  console.log("Rendering files...", JSON.parse(JSON.stringify(state.files)));
   filesList.innerHTML = "";
 
   state.files.forEach((file) => {
+    const fid = file.id || file.doc_id;       // <-- FIX 💥
+    const fname = file.name || file.filename; // <-- FIX 💥
+
     const div = document.createElement("div");
     div.className = "file-item";
 
-    if (file.id === state.activeDocId) {
+    if (fid === state.activeDocId) {
       div.style.background = "#dbeafe";
     }
 
-    // ✅ Entire click handling is now in HTML itself
     div.innerHTML = `
-        <div class="file-icon">📄</div>
-  
-        <div class="file-info" onclick="selectFile('${file.id}')">
-          <div class="file-name">${file.name}</div>
-          <div class="file-meta">${file.size} • ${file.date}</div>
-        </div>
-  
-        <div class="status-badge">${file.status}</div>
-  
-        <button class="delete-btn" onclick="deleteFile('${file.id}')">🗑</button>
-      `;
+      <div class="file-icon">📄</div>
+
+      <div class="file-info" onclick="selectFile('${fid}')">
+        <div class="file-name">${fname}</div>
+        <div class="file-meta">${file.size || ""} ${file.date || ""}</div>
+      </div>
+
+      <div class="status-badge">${file.status || "Indexed"}</div>
+
+      <button type="button" class="delete-btn" onclick="deleteFile('${fid}')">🗑</button>
+    `;
 
     filesList.appendChild(div);
   });
 }
 
+
 function selectFile(fileId) {
-  const file = state.files.find((f) => f.id === fileId);
+  // const file = state.files.find((f) => f.id === fileId);
+  const file = state.files.find((f) => 
+  f.id === fileId || f.doc_id === fileId
+);
+
   if (!file) return;
 
   state.activeDocId = fileId;
@@ -372,7 +519,11 @@ async function deleteFile(docId) {
   }
 
   // Remove from UI state
-  state.files = state.files.filter((f) => f.id !== docId);
+  // state.files = state.files.filter((f) => f.id !== docId);
+  state.files = state.files.filter((f) =>
+  (f.id || f.doc_id) !== docId
+);
+
 
   // Unselect if this was selected
   if (state.activeDocId === docId) {

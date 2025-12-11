@@ -47,6 +47,18 @@ def get_status(task_id: str):
         "result": res.result if res.ready() else None,
     }
 
+@router.get("/documents/list")
+def list_documents(db: Session = Depends(get_db)):
+    docs = db.query(Document).all()
+    return [
+        {
+            "doc_id": d.doc_id,
+            "filename": d.filename,
+            "text": d.text
+        }
+        for d in docs
+    ]   
+
 
 @router.post("/query")
 def query(data: dict):

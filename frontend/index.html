@@ -32,13 +32,12 @@
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="loginEmail">Email Address</label>
-                        <input type="email" id="loginEmail" 
-                            >
+                        <input type="email" id="loginEmail">
                     </div>
 
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword"  >
+                        <input type="password" id="loginPassword">
                     </div>
 
                     <button type="submit" class="btn">Sign In</button>
@@ -63,18 +62,17 @@
                 <form onsubmit="handleSignup(event)">
                     <div class="form-group">
                         <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" >
+                        <input type="text" id="signupName">
                     </div>
 
                     <div class="form-group">
                         <label for="signupEmail">Email Address</label>
-                        <input type="email" id="signupEmail" >
+                        <input type="email" id="signupEmail">
                     </div>
 
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" required minlength="6"
-                            >
+                        <input type="password" id="signupPassword" required minlength="6">
                     </div>
 
                     <button type="submit" class="btn">Create Account</button>
@@ -106,7 +104,8 @@
 
             <div class="app-content">
                 <!-- Sidebar -->
-                <aside class="sidebar">abhi@gmail.com
+                <aside class="sidebar">
+                    <div class="user-email">abhi@gmail.com</div>
                     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                         <span class="upload-icon">📁</span>
                         <div class="upload-text">Click to upload documents</div>
@@ -120,14 +119,15 @@
                         style="margin-bottom: 10px; font-size: 13px; color: var(--primary); background: var(--primary-light); padding: 8px; border-radius: 6px;">
                     </div>
 
-                    <button class="btn" id="uploadBtn" disabled onclick="handleUpload()"
+                    <!-- FIX 1 (commented out): <button type="button" class="btn" id="uploadBtn" disabled onclick="handleUpload()" -->
+                    <button type="button" class="btn" id="uploadBtn" disabled onclick="handleUpload()"
                         style="margin-bottom: 24px; font-size: 14px; padding: 10px;">Upload Document</button>
 
-                        <div class="file-list-header">
-                            <span>Your Documents (Click to Select)</span>
-                            <span>Status</span>
-                        </div>
-                        
+                    <div class="file-list-header">
+                        <span>Your Documents (Click to Select)</span>
+                        <span>Status</span>
+                    </div>
+
 
                     <div class="file-list" id="filesList">
                         <!-- Files will be inserted here -->
@@ -150,7 +150,7 @@
                         <div class="input-wrapper">
                             <textarea id="chatInput" class="chat-input"
                                 placeholder="Ask a question about your documents..." rows="1"></textarea>
-                            <button id="sendBtn" class="send-btn" onclick="handleSendMessage()">
+                            <button type="button" id="sendBtn" class="send-btn" onclick="handleSendMessage()">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="22" y1="2" x2="11" y2="13"></line>

@@ -1,90 +1,41 @@
-# from fastapi import APIRouter, UploadFile, File, Depends
-# import hashlib
-# import redis
-# from rag.celery_app import celery
-# from celery.result import AsyncResult
-# from pydantic import BaseModel
-# from rag.tasks import process_file
-# from rag.embeddings import embed_text
-# from rag.vectorstore import vstore
-# from rag.llm import generate_answer
-# from rag.db import SessionLocal, Chunk
-# from auth_dependencies import get_current_user
-
-# router = APIRouter()
-
-# REDIS_HOST = "localhost"
-# r = redis.Redis(host=REDIS_HOST, port=6379, db=1, decode_responses=True)
-
-# @router.post("/upload")
-# async def upload_file(file: UploadFile = File(...), user=Depends(get_current_user)):
-#     content = await file.read()
-#     task = process_file.apply_async(args=[content, file.filename, user.id])
-#     return {"task_id": task.id}
-
-# @router.get("/status/{task_id}")
-# def get_status(task_id: str):
-#     res = AsyncResult(task_id, app=celery)
-#     return {"id": task_id, "state": res.state, "result": res.result}
-
-# class QueryIn(BaseModel):
-#     question: str
-
-# @router.post("/query")
-# def query(q: QueryIn, user=Depends(get_current_user)):
-#     qhash = hashlib.sha256(q.question.encode()).hexdigest()
-#     cached = r.get(f"cache:query:{qhash}")
-
-#     if cached:
-#         return {"answer": cached, "cached": True}
-
-#     qvec = embed_text(q.question)
-#     hits = vstore.search(qvec, top_k=4)
-
-#     context = "\n\n".join([h["meta"]["text_preview"] for h in hits])
-#     answer = generate_answer(q.question, context)
-
-#     r.setex(f"cache:query:{qhash}", 3600, answer)
-#     return {"answer": answer, "hits": hits, "cached": False}
-
-# @router.get("/chunk/{doc_id}/{chunk_index}")
-# def get_chunk(doc_id: str, chunk_index: int, user=Depends(get_current_user)):
-#     db = SessionLocal()
-#     chunk = db.query(Chunk).filter(
-#         Chunk.doc_id == doc_id,
-#         Chunk.chunk_index == chunk_index
-#     ).first()
-#     db.close()
-
-#     if not chunk:
-#         return {"error": "not found"}
-
-#     return {"doc_id": doc_id, "chunk_index": chunk_index, "text": chunk.text}
-
 import uuid
-from fastapi import APIRouter, UploadFile, File, HTTPException
+
 from celery.result import AsyncResult
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from rag.db import Chunk, Document, get_db
+from rag.vectorstore import delete_document_from_vectorstore
+from sqlalchemy.orm import Session
 
 from .celery_app import celery
-from .tasks import process_file
 from .embeddings import embed_text
-from .vectorstore import vstore
 from .llm import generate_answer
+from .redis_client import redis_client
+from .tasks import process_file
+from .utils import question_to_key
+from .vectorstore import vstore
 
 router = APIRouter()
 
+
 @router.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
     content = await file.read()
 
+    # Generate UUID for this document
     doc_id = str(uuid.uuid4())
+
+    # 1️⃣ Save document entry immediately (empty text for now)
+    doc = Document(
+        doc_id=doc_id, filename=file.filename, text=""  # text will be filled by Celery
+    )
+    db.add(doc)
+    db.commit()
+
+    # 2️⃣ Queue Celery task
     task = process_file.apply_async(args=[content, file.filename, None, doc_id])
 
-    return {
-        "task_id": task.id,
-        "doc_id": doc_id,
-        "filename": file.filename
-    }
+    return {"task_id": task.id, "doc_id": doc_id, "filename": file.filename}
+
 
 @router.get("/status/{task_id}")
 def get_status(task_id: str):
@@ -93,28 +44,76 @@ def get_status(task_id: str):
     return {
         "id": task_id,
         "state": res.state,
-        "result": res.result if res.ready() else None
+        "result": res.result if res.ready() else None,
     }
+
 
 @router.post("/query")
 def query(data: dict):
     print("Query data:", data)
+
     question = data.get("question")
     doc_id = data.get("doc_id")
+
+    if not question:
+        raise HTTPException(400, "question is required")
 
     if not doc_id:
         raise HTTPException(400, "doc_id is required")
 
+    # ✅ 1. CREATE REDIS KEY (QUESTION + DOC ID SAFE)
+    cache_key = question_to_key(f"{doc_id}:{question}")
+
+    # ✅ 2. CHECK REDIS FIRST
+    cached_answer = redis_client.get(cache_key)
+    if cached_answer:
+        return {
+            "source": "redis_cache",
+            "answer": cached_answer,
+            "doc_id": doc_id,
+            "hits": [],
+        }
+
+    # ✅ 3. EMBED QUESTION
     qvec = embed_text(question)
 
+    # ✅ 4. VECTOR SEARCH
     hits = vstore.search(qvec, doc_id=doc_id)
 
     context = "\n\n".join([h["meta"]["text"] for h in hits])
 
+    # ✅ 5. LLM GENERATION
     answer = generate_answer(question, context)
 
-    return {
-        "answer": answer,
-        "hits": hits,
-        "doc_id": doc_id
-    }
+    # ✅ 6. STORE ANSWER IN REDIS (24 HOURS)
+    redis_client.setex(cache_key, 60 * 60 * 24, answer)  # 24 hours TTL
+
+    return {"source": "llm", "answer": answer, "hits": hits, "doc_id": doc_id}
+
+
+@router.delete("/documents/{doc_id}")
+def delete_document(doc_id: str, db: Session = Depends(get_db)):
+
+    print("DELETE CALLED WITH:", repr(doc_id))  # shows whitespace too
+
+    docs = db.query(Document).all()
+    print("DB DOC_IDS:", [repr(d.doc_id) for d in docs])
+
+    doc = db.query(Document).filter(Document.doc_id == doc_id).first()
+    print("RESULT OF QUERY:", doc)
+
+    if not doc:
+        raise HTTPException(404, "Document not found")
+
+    # delete vectorstore
+    delete_document_from_vectorstore(doc_id)
+
+    # delete chunks
+    db.query(Chunk).filter(Chunk.doc_id == doc_id).delete()
+
+    # delete doc entry
+    db.delete(doc)
+    db.commit()
+
+    return {"status": "success"}
+

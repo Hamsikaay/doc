@@ -1,7 +1,4 @@
-# chunker.py
-"""
-Simple chunking utility: yields overlapping text chunks.
-"""
+
 def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 200):
     start = 0
     L = len(text)

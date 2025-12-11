@@ -74,6 +74,8 @@ services:
       - backend
     volumes:
       - ./backend:/app
+    ports:
+      - "9100:9100"  
 
   # ⚪ PROMETHEUS
   prometheus:

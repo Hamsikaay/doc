@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 </head>
 
 <body>
@@ -30,13 +32,13 @@
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="loginEmail">Email Address</label>
-                        <input type="email" id="loginEmail" required placeholder="demo@example.com"
-                            value="demo@example.com">
+                        <input type="email" id="loginEmail" 
+                            >
                     </div>
 
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" required placeholder="••••••••" value="password">
+                        <input type="password" id="loginPassword"  >
                     </div>
 
                     <button type="submit" class="btn">Sign In</button>
@@ -61,18 +63,18 @@
                 <form onsubmit="handleSignup(event)">
                     <div class="form-group">
                         <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" required placeholder="John Doe">
+                        <input type="text" id="signupName" >
                     </div>
 
                     <div class="form-group">
                         <label for="signupEmail">Email Address</label>
-                        <input type="email" id="signupEmail" required placeholder="john@example.com">
+                        <input type="email" id="signupEmail" >
                     </div>
 
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
                         <input type="password" id="signupPassword" required minlength="6"
-                            placeholder="Min 6 characters">
+                            >
                     </div>
 
                     <button type="submit" class="btn">Create Account</button>
@@ -104,7 +106,7 @@
 
             <div class="app-content">
                 <!-- Sidebar -->
-                <aside class="sidebar">
+                <aside class="sidebar">abhi@gmail.com
                     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                         <span class="upload-icon">📁</span>
                         <div class="upload-text">Click to upload documents</div>

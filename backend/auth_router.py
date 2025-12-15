@@ -1,6 +1,6 @@
 # auth_router.py
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from auth_models import SignupRequest, LoginRequest, TokenResponse
 from password_utils import hash_password, verify_password
 from jwt_config import create_access_token, create_refresh_token
@@ -8,11 +8,16 @@ from database import get_db
 from models import User
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
-from jwt_config import SECRET_KEY, ALGORITHM
+from jwt_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from rag.redis_client import redis_client
+from datetime import datetime
 
 
 
 router = APIRouter(tags=["Auth"])
+
+# Token blacklist prefix in Redis
+TOKEN_BLACKLIST_PREFIX = "blacklist:"
 
 # In-memory temporary DB — replace with real DB later
 
@@ -73,6 +78,38 @@ def refresh_token(refresh_token: str):
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
 
 
+@router.post("/logout")
+def logout(Authorization: str = Header(None)):
+    """Logout user by blacklisting the access token in Redis."""
+    if Authorization is None:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
 
+    try:
+        scheme, token = Authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(status_code=401, detail="Invalid auth scheme")
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Authorization header format")
 
+    try:
+        # Decode token to get expiry time
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        exp_timestamp = payload.get("exp")
+        
+        if exp_timestamp:
+            # Calculate remaining TTL
+            remaining_ttl = exp_timestamp - int(datetime.utcnow().timestamp())
+            if remaining_ttl > 0:
+                # Blacklist token in Redis with TTL matching token expiry
+                redis_client.setex(
+                    f"{TOKEN_BLACKLIST_PREFIX}{token}",
+                    remaining_ttl,
+                    "blacklisted"
+                )
+        
+        return {"message": "Successfully logged out"}
+
+    except JWTError:
+        # Even if token is invalid/expired, consider it logged out
+        return {"message": "Successfully logged out"}
 

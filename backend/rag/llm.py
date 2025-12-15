@@ -3,7 +3,7 @@ from huggingface_hub import InferenceClient
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# ✅ THIS MODEL IS CONFIRMED WORKING FOR YOU
+
 MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 
 client = InferenceClient(

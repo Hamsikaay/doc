@@ -91,27 +91,39 @@ async function showMainApp() {
   userAvatar.textContent = state.user?.name?.charAt(0).toUpperCase() || "U";
 
   async function loadUserDocuments() {
-  const res = await fetch(`${API_BASE}/rag/documents/list`, {
-    headers: { Authorization: `Bearer ${state.token}` }
-  });
+    const res = await fetch(`${API_BASE}/rag/documents/list`, {
+      headers: { Authorization: `Bearer ${state.token}` }
+    });
 
-  const backendFiles = await res.json();
+    const backendFiles = await res.json();
 
-  // Normalize document format so UI works correctly
-  state.files = backendFiles.map(f => ({
-    id: f.doc_id,
-    name: f.filename,
-    size: "",
-    date: "",
-    status: "Indexed"
-  }));
-}
-await loadUserDocuments();
+    // Normalize document format so UI works correctly
+    state.files = backendFiles.map(f => ({
+      id: f.doc_id,
+      name: f.filename,
+      size: "",
+      date: "",
+      status: "Indexed"
+    }));
+  }
+  await loadUserDocuments();
 
   renderFiles();
 }
 
-function handleLogout() {
+async function handleLogout() {
+  // Call backend logout to invalidate token
+  if (state.token) {
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+    } catch (error) {
+      console.error("Logout API error:", error);
+    }
+  }
+
   state = {
     token: null,
     user: null,
@@ -152,7 +164,7 @@ async function handleUpload() {
     method: "POST",
     headers: { Authorization: `Bearer ${state.token}` },
     body: formData,
-  });
+  })
 
   const data = await res.json();
 
@@ -436,14 +448,14 @@ document.addEventListener("DOMContentLoaded", () => {
 //     // ✅ Entire click handling is now in HTML itself
 //     div.innerHTML = `
 //         <div class="file-icon">📄</div>
-  
+
 //         <div class="file-info" onclick="selectFile('${file.id}')">
 //           <div class="file-name">${file.name}</div>
 //           <div class="file-meta">${file.size} • ${file.date}</div>
 //         </div>
-  
+
 //         <div class="status-badge">${file.status}</div>
-  
+
 //         <button class="delete-btn" onclick="deleteFile('${file.id}')">🗑</button>
 //       `;
 
@@ -486,9 +498,9 @@ function renderFiles() {
 
 function selectFile(fileId) {
   // const file = state.files.find((f) => f.id === fileId);
-  const file = state.files.find((f) => 
-  f.id === fileId || f.doc_id === fileId
-);
+  const file = state.files.find((f) =>
+    f.id === fileId || f.doc_id === fileId
+  );
 
   if (!file) return;
 
@@ -521,8 +533,8 @@ async function deleteFile(docId) {
   // Remove from UI state
   // state.files = state.files.filter((f) => f.id !== docId);
   state.files = state.files.filter((f) =>
-  (f.id || f.doc_id) !== docId
-);
+    (f.id || f.doc_id) !== docId
+  );
 
 
   // Unselect if this was selected

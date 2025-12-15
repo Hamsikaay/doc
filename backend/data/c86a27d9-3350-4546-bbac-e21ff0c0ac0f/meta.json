@@ -1,0 +1,68 @@
+[
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 0,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "1. Checked vs Unchecked Exceptions + Propagation\nChecked exceptions are validated at compile time. The compiler forces the programmer to either\nhandle them using try-catch or declare them using 'throws'. Examples include IOException,\nSQLException, and ClassNotFoundException.\nUnchecked exceptions occur at runtime due to logical errors such as division by zero or accessing null\nobjects.\nException propagation is the process where an exception moves backward in the call stack until\nhandled. Unchecked exceptions propagate automatically, while checked exceptions must be declared\nor handled.\nExample (Unchecked Propagation):\nvoid a(){ int x = 10/0; }\nvoid b(){ a(); }\nvoid c(){ b(); }\nThe ArithmeticException travels from a() ﬁ b() ﬁ c() until caught.\n2. final, finally, finalize\nfinal: Used to prevent modification. A final variable cannot change, a final method cannot be overridden,\nand a final class cannot be extended.\nfinally: A block used in exception handling to ensure cleanup actions always"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 1,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "nt modification. A final variable cannot change, a final method cannot be overridden,\nand a final class cannot be extended.\nfinally: A block used in exception handling to ensure cleanup actions always occur, such as closing files\nor releasing resources.\nfinalize(): A method called by the garbage collector before destroying an object. It is deprecated and not\nreliable for cleanup.\n3. Exception Handling + JVM Rules\nJava handles exceptions using try, catch, and finally. This structure prevents abnormal program\ntermination.\nExample:\ntry { int x = 10/0; }\ncatch(Exception e) { System.out.println('Error'); }\nfinally { System.out.println('Cleanup done'); }\nJVM Rules:\n1. If no catch matches, the JVM searches the call stack for a handler.\n2. If none found, the JVM terminates the program with an error message.\n3. finally executes regardless of exception presence, except when System.exit() is called.\n4. throw vs throws + finally explanation\nthrow: Used inside a method to manually generate an excep"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 2,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "r message.\n3. finally executes regardless of exception presence, except when System.exit() is called.\n4. throw vs throws + finally explanation\nthrow: Used inside a method to manually generate an exception.\nExample: throw new IllegalArgumentException();\nthrows: Used in method signature to declare potential exceptions.\nExample: void read() throws IOException {}\nfinally: Commonly used to close files, release database connections, or free resources, ensuring\nexecution in all circumstances.\n5. Custom Checked Exception + Propagation\nExample:\nclass MyException extends Exception { MyException(String msg){ super(msg);} }\nvoid m1() throws MyException { throw new MyException('Error'); }\nvoid m2() throws MyException { m1(); }\nvoid m3(){\ntry{ m2(); }\ncatch(MyException e){ System.out.println('Handled: ' + e.getMessage()); }\n}\nHere, the exception moves from m1 ﬁ m2 ﬁ m3 until handled.\n6. Java Exception Hierarchy\nThe root of all exceptions is Throwable.\nThrowable has two branches:\n1. Exception ﬁ recov"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 3,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": " + e.getMessage()); }\n}\nHere, the exception moves from m1 ﬁ m2 ﬁ m3 until handled.\n6. Java Exception Hierarchy\nThe root of all exceptions is Throwable.\nThrowable has two branches:\n1. Exception ﬁ recoverable issues\n- RuntimeException (unchecked)\n- IOException, SQLException (checked)\n2. Error ﬁ serious, unrecoverable issues such as OutOfMemoryError.\nThis hierarchy helps classify Java failures.\n7. Additional Exception FAQs\na. No statements allowed between try and catch.\nb. Yes, Java supports multi-catch: catch(IOException | SQLException e).\nc. Checked exceptions inside lambdas require a try-catch.\nd. finally almost always executes.\ne. After handling, exception objects may be garbage-collected.\nf. Static blocks cannot throw checked exceptions.\ng. If constructor throws exception, object creation fails.\nh. Cleanup in finally ensures predictable execution.\ni. try alone is allowed only in try-with-resources.\n1. Types of I/O Streams\nByte Streams: Handle raw binary data. Examples: FileInputStrea"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 4,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "n fails.\nh. Cleanup in finally ensures predictable execution.\ni. try alone is allowed only in try-with-resources.\n1. Types of I/O Streams\nByte Streams: Handle raw binary data. Examples: FileInputStream, FileOutputStream.\nCharacter Streams: Handle textual data. Examples: FileReader, FileWriter.\nBuffered Streams: Improve speed by reducing I/O operations. Examples: BufferedReader,\nBufferedInputStream.\nData Streams: Allow reading/writing primitives. Example: DataInputStream.\nObject Streams: Support serialization. Example: ObjectOutputStream.\n2. Serialization & Deserialization\nSerialization converts an object into a byte stream to store or transmit it.\nExample:\nObjectOutputStream out = new ObjectOutputStream(new FileOutputStream('data.txt'));\nout.writeObject(obj);\nDeserialization restores an object:\nObjectInputStream in = new ObjectInputStream(new FileInputStream('data.txt'));\nMyClass obj = (MyClass) in.readObject();\n3. Buffered Streams\nBufferedReader and BufferedInputStream use internal bu"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 5,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "ject:\nObjectInputStream in = new ObjectInputStream(new FileInputStream('data.txt'));\nMyClass obj = (MyClass) in.readObject();\n3. Buffered Streams\nBufferedReader and BufferedInputStream use internal buffers to speed up reading.\nExample:\nBufferedReader br = new BufferedReader(new FileReader('test.txt'));\nString line = br.readLine();\n4. File operations\nCreate directory: new File('docs').mkdir();\nCheck file size: file.length();\nGet extension: name.substring(name.lastIndexOf('.')+1);\nDelete file: file.delete();\nProperties such as exists(), isDirectory(), canRead(), isHidden() help inspect files.\n1. List vs Set vs Map\nList stores ordered elements with duplicates.\nSet stores unique elements without order.\nMap stores key-value pairs.\nReal-world uses:\nList ﬁ playlist\nSet ﬁ unique usernames\nMap ﬁ dictionary lookup\n2. ArrayList vs LinkedList\nArrayList:\n- Fast random access\n- Slower inserts\nLinkedList:\n- Fast inserts/deletes\n- Slower indexing\n3. HashSet internal working\nHashSet uses hashing:\n1. ha"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 6,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "ctionary lookup\n2. ArrayList vs LinkedList\nArrayList:\n- Fast random access\n- Slower inserts\nLinkedList:\n- Fast inserts/deletes\n- Slower indexing\n3. HashSet internal working\nHashSet uses hashing:\n1. hashCode() determines bucket.\n2. equals() checks duplication.\nThus, proper overriding ensures correctness.\n4. HashMap vs TreeMap\nHashMap is faster and does not maintain order.\nTreeMap is slower but sorts keys naturally.\n5. Fail-Fast vs Fail-Safe\nFail-fast (ArrayList, HashMap): Throws ConcurrentModificationException.\nFail-safe (ConcurrentHashMap, CopyOnWriteArrayList): Uses copy, preventing exceptions.\n6. ConcurrentHashMap vs HashMap\nConcurrentHashMap supports thread-safe access by locking segments.\nHashMap is unsafe in multithreaded applications.\n7. Comparable vs Comparator\nComparable: Natural ordering inside class.\nComparator: External comparison logic.\n8. Implementing Comparable\nclass Student implements Comparable{\nint age;\npublic int compareTo(Student s){\nreturn this.age - s.age;\n}\n}\n9. M"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 7,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "rdering inside class.\nComparator: External comparison logic.\n8. Implementing Comparable\nclass Student implements Comparable{\nint age;\npublic int compareTo(Student s){\nreturn this.age - s.age;\n}\n}\n9. Multiple sorting orders\nComparator byName = Comparator.comparing(s->s.name);\nComparator byAge = Comparator.comparingInt(s->s.age);\n10. equals, hashCode, toString\nequals(): logical comparison\nhashCode(): distributes into buckets\ntoString(): readable representation\n11. Why override equals and hashCode together?\nIf equals returns true but hashCode differs, HashSet/HashMap breaks uniqueness rules.\n12. Array vs Collection\nArrays are fixed-size; Collections are dynamic.\n13. Collection Hierarchy\nMain interfaces: List, Set, Queue.\nMap is separate.\n14. Collection vs Collections\nCollection = interface.\nCollections = utility class.\n15. HashMap vs Hashtable\nHashMap ﬁ unsynchronized.\nHashtable ﬁ synchronized but outdated.\n16. HashSet vs HashMap\nHashSet stores only values.\nHashMap stores key-value pairs."
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 8,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "ollections = utility class.\n15. HashMap vs Hashtable\nHashMap ﬁ unsynchronized.\nHashtable ﬁ synchronized but outdated.\n16. HashSet vs HashMap\nHashSet stores only values.\nHashMap stores key-value pairs.\n17. Why HashSet unordered?\nHashing does not preserve element order.\n18. HashMap in multithreading\nUnsafe and may corrupt structure. Prefer ConcurrentHashMap.\n19. WeakHashMap\nKeys removed when no strong reference exists. Useful for caches.\n20. Internal working of HashMap\nUses hashing ﬁ buckets ﬁ linked list or tree nodes.\n21. Implementations of Set\nHashSet: fastest\nLinkedHashSet: maintains insertion order\nTreeSet: sorts elements\n22. Iterator and iterating Map\nIterator allows traversal:\nIterator it = list.iterator();\nMap iteration:\nfor(var e : map.entrySet()){}\n1. Multiprocessing vs Multithreading\nMultiprocessing: Multiple CPUs.\nMultithreading: Multiple threads share same memory.\n2. Creating threads\n1. Extend Thread\n2. Implement Runnable (recommended)\n3. Use ExecutorService\n3. Daemon thread"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 9,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "ing\nMultiprocessing: Multiple CPUs.\nMultithreading: Multiple threads share same memory.\n2. Creating threads\n1. Extend Thread\n2. Implement Runnable (recommended)\n3. Use ExecutorService\n3. Daemon threads\nDaemon threads run in background (e.g., GC). They end when all user threads finish.\n4. start() vs run()\nstart() ﬁ new thread.\nrun() ﬁ executes like normal method.\n5. Thread life cycle\nStates: New ﬁ Runnable ﬁ Running ﬁ Blocked/Waiting ﬁ Terminated.\n6. Thread priorities\nRange 1–10, but OS scheduling determines effect.\n7. synchronized keyword\nEnsures only one thread accesses critical code at a time.\n8. wait(), notify(), notifyAll()\nwait(): releases lock, pauses thread.\nnotify(): wakes one thread.\nnotifyAll(): wakes all waiting threads.\n9. Must be inside synchronized block\nThey operate on monitor lock; otherwise IllegalMonitorStateException.\n10. Inter-thread communication\nThreads communicate using shared data + wait/notify.\n11. Passing parameters to thread\nclass Worker implements Runnable{\n"
+  },
+  {
+    "doc_id": "c86a27d9-3350-4546-bbac-e21ff0c0ac0f",
+    "chunk_index": 10,
+    "filename": "Java_OptionB_Detailed.pdf",
+    "text": "or lock; otherwise IllegalMonitorStateException.\n10. Inter-thread communication\nThreads communicate using shared data + wait/notify.\n11. Passing parameters to thread\nclass Worker implements Runnable{\nint x;\nWorker(int x){ this.x = x; }\n}\n12. volatile, join, yield, sleep, monitor locks\nvolatile ﬁ ensures visibility.\njoin() ﬁ wait for thread to finish.\nyield() ﬁ give CPU to others.\nsleep() ﬁ pause execution.\nMonitor lock ﬁ intrinsic lock for synchronized blocks.\n"
+  }
+]

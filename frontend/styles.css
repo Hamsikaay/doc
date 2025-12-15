@@ -171,7 +171,7 @@ input:focus {
 }
 
 .app-header {
-  padding: 20px 32px;
+  padding: 10px 24px;
   background: white;
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -180,16 +180,16 @@ input:focus {
 }
 
 .app-title {
-  font-size: 32px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 700;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .title-icon {
-  font-size: 32px;
+  font-size: 22px;
 }
 
 .title-text {
@@ -202,27 +202,26 @@ input:focus {
 
 .user-card {
   background: #f8fafc;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
-  min-width: 140px;
   box-shadow: var(--shadow-sm);
 }
 
 .user-profile {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .avatar-circle {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   background: var(--primary-light);
   color: var(--primary);
   border-radius: 50%;
@@ -230,7 +229,7 @@ input:focus {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

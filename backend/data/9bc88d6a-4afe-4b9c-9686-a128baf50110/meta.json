@@ -1,0 +1,320 @@
+[
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 12,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "rial schedule, then that non- \nserial schedule is called as serializability.\n  Serializable schedules behave exactly same as serial schedules.\n  Even though, Serial Schedule and Serializable Schedule produce same result, there are \nsome differences they are\nSerial Schedules  Serializable Schedules \nConcurrency  is  not allowed. Thus, all the \nConcurrency  is  allowed.  Thus,  multiple \ntransactions necessarily execute serially one \ntransactions can execute concurrently. \nafter the other. \nIt leads to less resource utilization and CPU  It improves  both  resource  utilization  and \nthroughput.  CPU throughput. \nSerial  Schedules  are  less  efficient  as  Serializable  Schedules  are  always  better \ncompared to serializable schedules.  than serial schedules. \nSerializability is mainly of two types. They are: \n  Conflict Serializability \n  View Serializability \n \n6 | P a g e \n \n \n \n \n \nConflict  Serializability:  If  a  given  non-serial  schedule  can  be  converted  into  a  se"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 13,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " of two types. They are: \n  Conflict Serializability \n  View Serializability \n \n6 | P a g e \n \n \n \n \n \nConflict  Serializability:  If  a  given  non-serial  schedule  can  be  converted  into  a  serial \nschedule by swapping its non-conflicting operations, then it is called as a conflict serializable \nschedule. \nTwo operations are called as conflicting operations if all the following conditions hold true \n(1)  Both the operations belong to different transactions \n(2)  Both the operations are on the same data item \n(3)  At least one of the two operations is a write operation \n \nSchedule – 1    Schedule – 2    Schedule - 3    Schedule - 4 \nT1  T2  T1  T2  T1  T2  T1  T2 \nRead(A)   Read(A)    Write(B)   Write(B)  \nRead(A)  Write(A)  Read(A)  Write(B) \nIn Schedule -1, only rule (1) & (2) are true, but rule (3) is not holding. So, the operations are not conflict. \nIn Schedule -2, rule (1), (2) & (3) are true. So, the operations are conflict. \nIn Schedule -3, only rule (1) & (3) are true, "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 14,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " true, but rule (3) is not holding. So, the operations are not conflict. \nIn Schedule -2, rule (1), (2) & (3) are true. So, the operations are conflict. \nIn Schedule -3, only rule (1) & (3) are true, but rule (2) is not holding. So, the operations are not conflict. \nIn Schedule -4, rule (1), (2) & (3) are true. So, the operations are conflict. \nTesting  of  Conflict  Serializability:  Precedence  Graph  is  used  to  test  the  Conflict \nSerializability of a schedule. The algorithm to draw precedence graph is \n(1) Draw a node for each transaction in Schedule S. \n(2)  If T  reads X value written by T , then draw arrow from T  → T . \na b b a\n(3) If T  writes X value after it has been read by T , then draw arrow from T  → T . \nb a a b\n(4) If T  writes X after T  writes X, then draw arrow from T  → T . \na b b a\nIf the precedence graph has no cycle, then Schedule S is known as conflict serializable. If a \nprecedence graph contains a cycle, then S is not conflict serializable. \nProblem-01: C"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 15,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " T  → T . \na b b a\nIf the precedence graph has no cycle, then Schedule S is known as conflict serializable. If a \nprecedence graph contains a cycle, then S is not conflict serializable. \nProblem-01: Check whether the given schedule S is conflict serializable or not. \nS : R (A) , R (A) , R (B) , R (B) , R (B) , W (A) , W (B) \n1 2 1 2 3 1 2\nSolution:  \nGiven that  S : R (A) , R (A) , R (B) , R (B) , R (B) , W (A) , W (B) . \n1 2 1 2 3 1 2\nThe schedule for the above operations is \n  Schedule-1 \nT1  T2  T3 \nRead(A)     \nRead(A)   \n \nRead(B)   \nRead(B)   \nRead(B) \nWrite(A)   \nWrite(B) \n \n7 | P a g e \n \n \n \n \n \nList all the conflicting operations and determine the dependency between the transactions \n(Thumb rule to find conflict operations: For each Write(X) in Ta, make a pair with each Read(X) and Write(X) in Tb. \nThe order is important in each pair i.e., for example, Read after Write on X or write after read on X in the given schedule.) \n  R (A) , W (A)  (T  → T ) \n2 1 2 1\n  R (B) , W (B)"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 16,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "nd Write(X) in Tb. \nThe order is important in each pair i.e., for example, Read after Write on X or write after read on X in the given schedule.) \n  R (A) , W (A)  (T  → T ) \n2 1 2 1\n  R (B) , W (B)  (T  → T ) \n1 2 1 2\n  R (B) , W (B)  (T  → T ) \n3 2 3 2\nDraw the precedence graph: \nThere exists a cycle in the above graph. Therefore, the schedule S is not conflict serializable. \n \nProblem-02:  Check whether the given schedule S is conflict serializable schedule. \nSchedule – S \nT1  T2  T3  T4 \n  Read(X)     \nWrite(X) \n    COMMIT   \nWrite(X) \nCOMMIT       \nWrite(Y) \n  Read(Z)     \n  COMMIT   \nRead(X) \n      Read(Y) \n      COMMIT \nSolution: List all the conflicting operations to determine the dependency between transactions. \n \nR (X) , W (X)  (T  → T ) \n2 3 2 3\nW (X) , W (X)  (T  → T ) \n3 1 3 1\nW (X) , R (X)  (T  → T ) \n3 4 3 4\nR (X) , W (X)  (T  → T ) \n2 1 2 1\nW (X) , R (X)  (T  → T ) \n1 4 1 4\nW (Y) , R (Y)  (T  → T ) \n2 4 2 4\nDraw the precedence graph: \n \nThere exists no cycle in the "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 17,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " 3 1\nW (X) , R (X)  (T  → T ) \n3 4 3 4\nR (X) , W (X)  (T  → T ) \n2 1 2 1\nW (X) , R (X)  (T  → T ) \n1 4 1 4\nW (Y) , R (Y)  (T  → T ) \n2 4 2 4\nDraw the precedence graph: \n \nThere exists no cycle in the precedence graph. Therefore, the schedule S is conflict serializable. \n \n8 | P a g e \n \n \n \n \n \nView Serializability: Two schedules S1 and S2 are said to be view equivalent if both of \nthem satisfy the following three rules: \n(1) Initial Read: The first read operation on each data item in both the schedule must be same. \n  For each data item X, If first read on X is done by transaction T  in schedule S1, then in \na\nschedule2 also the first read on X must be done by transaction T  only. \na\n(2) Updated Read: It should be same in both the schedules. \n  If Read(X) of T  followed by Write(X) of T  in schedule S1, then in schedule S2 also, Read(X) \na b\nof T  must follow Write(X) of T  . \na b .\n(3) Final write: The final write operation on each data item in both the schedule must be same. \n  F"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 18,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "  in schedule S1, then in schedule S2 also, Read(X) \na b\nof T  must follow Write(X) of T  . \na b .\n(3) Final write: The final write operation on each data item in both the schedule must be same. \n  For each data item X, if X has been updated at last by transaction T in schedule S1, then in \ni\nschedule S2 also, X must be updated at last by transaction T. \ni\nView Serializability Definition: If a given schedule is view equivalent to some serial \nschedule, then it is called as a view serializable schedule. \n \nNote: Every conflict serializable schedule is also view serializable schedule but not vice-versa \nProblem 03: Check whether the given schedule S is view serializable or not \nSchedule – 1 \nT1  T2 \nRead(A)   \nWrite(A)   \nRead(A) \n  Write(A) \nRead(B) \nWrite(B)   \nRead(B) \n  Write(B) \n \nSolution: \n \nFor the given schedule-1, the serial schedule can be schedule -2 \nSchedule-1 (S1)  Schedule-2 (S2) \nT1  T2  T1  T2 \nRead(A)    Read(A)   \nWrite(A)    Write(A)   \nRead(A)  Read(B)   \n  Write(A"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 19,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "tion: \n \nFor the given schedule-1, the serial schedule can be schedule -2 \nSchedule-1 (S1)  Schedule-2 (S2) \nT1  T2  T1  T2 \nRead(A)    Read(A)   \nWrite(A)    Write(A)   \nRead(A)  Read(B)   \n  Write(A)  Write(B)   \nRead(B)  Read(A) \nWrite(B)      Write(A) \nRead(B)    Read(B) \n  Write(B)    Write(B) \n   \n   \n \n9 | P a g e \n \n \n \n \n \nNow let us check whether the three rules of view-equivalent satisfy or not. \nSchedule-1 (S1)  Schedule-2 (S2) \nT1  T2  T1  T2 \nRead(A)  1  Read(A)  1 \nWrite(A)  Write(A) \n2  Read(A)  Read(B)  1 \n3 \nWrite(A)  Write(B) \nRead(B)  1  2  Read(A) \n3 \nWrite(B)  Write(A) \n2  Read(B)  2  Read(B) \n3  3 \nWrite(B)  Write(B) \n   \nRule 1: Initial Read \nFirst Read(A) is by T1 in S1 and in S2 also the first Read(A) is by T1 only. \nFirst Read(B) is by T1 in S1 and in S2 also the first Read(B) is by T1 only. \nRule 2: Updated Read \nWrite(A) of T1 is read by T2 in S1 and in S2 also Write(A) of T1 is read by T2 \nWrite(A) of T1 is read by T2 in S1 and in S2 also Write(A) of T1 is"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 20,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " first Read(B) is by T1 only. \nRule 2: Updated Read \nWrite(A) of T1 is read by T2 in S1 and in S2 also Write(A) of T1 is read by T2 \nWrite(A) of T1 is read by T2 in S1 and in S2 also Write(A) of T1 is read by T2 \nRule 3: Final Write \nThe final Write(A) is by T2 in S1 and in S2 also the final Write(A) is by T2 only \nThe final Write(B) is by T2 in S1 and in S2 also the final Write(B) is by T2 only \nConclusion: Hence, all the three rules are satisfied in this example, which means Schedule S1 \nand S2 are view equivalent. Also, it is proved that schedule S2 is the serial schedule of S1. Thus \nwe can say that the S1 schedule is a view serializable schedule. \nNote: Other way of solving it is, if we are able to prove that S1 is conflict serializable, then S1 is also view serializable. (Refer \nconflict serializable problems. Every conflict serializable schedule is also view serializable but not vice-versa.) \n \n5. IMPLEMENTATION OF ATOMICITY AND DURABILITY \nThe recovery-management component of a"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 21,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "lict serializable problems. Every conflict serializable schedule is also view serializable but not vice-versa.) \n \n5. IMPLEMENTATION OF ATOMICITY AND DURABILITY \nThe recovery-management component of a DBMS supports atomicity and durability by a variety \nof schemes. The simplest scheme to implement it is Shadow copy. \nShadow copy: In shadow-copy scheme, \n  A transaction that wants to update the database first creates a complete copy of the \ndatabase.\n  All updates are done on the new database copy, leaving the original copy, untouched.\n  If at any point the transaction has to be aborted, the system simply deletes the new copy. \nThe old copy of the database has not been affected.\n \n10 | P a g e \n \n \n \n \n \n  If the transaction complete successfully, then the database system updates the pointer db- \npointer to point to the new copy of the database; the new copy then becomes the original \ncopy of the database. The old copy of the database is then deleted. Figure below depicts \nthe sc"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 22,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " pointer db- \npointer to point to the new copy of the database; the new copy then becomes the original \ncopy of the database. The old copy of the database is then deleted. Figure below depicts \nthe scheme, showing the database state before and after the update.\nFigure: Shadow copy technique for atomicity and durability \n \n6. RECOVERABILITY \nDuring execution, if any of the transaction in a schedule is aborted, then this may leads \nthe database into inconsistence state. If anything goes wrong, then the completed operations in \nthe schedule needs to be undone. Sometimes, these undone operations may not possible. The \nrecoverability of schedule depends on undone operations. \nIf a transaction reads a data value that is updated by an uncommitted transaction, then \nthis type of read is called as a dirty read. \nIrrecoverable Schedule: In a schedule, if a transaction T  performs a dirty read operation \na\nfrom  other  transaction  T   and  T   commits  before  T   then  such  a  schedule  is  k"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 23,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " a dirty read. \nIrrecoverable Schedule: In a schedule, if a transaction T  performs a dirty read operation \na\nfrom  other  transaction  T   and  T   commits  before  T   then  such  a  schedule  is  known  as \nb a b\nan Irrecoverable Schedule. \nExample: Consider the following schedule \n \nT1  T2 \nRead(A)   \nWrite(A)   \n|   \n|  Read(A)  //Dirty Read \n|  Write(A) \n|  COMMIT \n|   \nROLLBACK   \nHere, \n  T2 performs a dirty read operation.\n \n11 | P a g e \n \n \n \n \n \n  T2 commits before T1.\n  T1 fails later and roll backs.\n  The value that T2 read now stands to be incorrect.\n  T2 cannot recover since it has already committed.\nRecoverable Schedules: In a schedule, if a transaction T  performs a dirty read operation \na\nfrom other transaction T  and T  commit operation delayed till T  commit, then such a schedule \nb a b\nis known as an Irrecoverable Schedule. \nExample: Consider the following schedule- \n \nT1  T2 \nRead(A)   \nWrite(A)   \n|   \n|  Read(A)  //Dirty Read \n|  Write(A) \n|   \nCOMMIT"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 24,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " then such a schedule \nb a b\nis known as an Irrecoverable Schedule. \nExample: Consider the following schedule- \n \nT1  T2 \nRead(A)   \nWrite(A)   \n|   \n|  Read(A)  //Dirty Read \n|  Write(A) \n|   \nCOMMIT   \n \nCOMMIT  //Delayed \nHere, \n  T2 performs a dirty read operation.\n  The commit operation of T2 is delayed till T1 commits or roll backs.\n  T1 commits later.\n  T2 is now allowed to commit.\n  In case, T1 would have failed, T2 has a chance to recover by rolling back. \nChecking Whether a Schedule is Recoverable or Irrecoverable: \nCheck if there exists any dirty read operation.\n  If there does not exist any dirty read operation, then the schedule is surely recoverable.\n  If there exists any dirty read operation, then\n If the commit operation of the transaction performing the dirty read occurs before \nthe commit or abort operation of the transaction which updated the value, then the \nschedule is irrecoverable. \n If the commit operation of the transaction performing the dirty "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 25,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "y read occurs before \nthe commit or abort operation of the transaction which updated the value, then the \nschedule is irrecoverable. \n If the commit operation of the transaction performing the dirty read is delayed till \nthe commit or abort operation of the transaction which updated the value, then the \nschedule is recoverable. \n \n12 | P a g e \n \n \n \n \n \n7. IMPLEMENTATION OF ISOLATION \nIsolation determines how transactions integrity is visible to other users and systems. It means \nthat a transaction should take place in a system in such a way that it is the only one transaction \nthat is accessing the resources in a database system. \nIsolation level defines the degree to which a transaction  must be isolated from the data \nmodifications made by any other transactions in the database system. The phenomena’s used to \ndefine levels of isolation are: \na)  Dirty Read \nb)  Non-repeatable Read \nc)  Phantom Read \nDirty Read: If a transaction reads a data value updated by an uncommitted transac"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 26,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": ". The phenomena’s used to \ndefine levels of isolation are: \na)  Dirty Read \nb)  Non-repeatable Read \nc)  Phantom Read \nDirty Read: If a transaction reads a data value updated by an uncommitted transaction, then \nthis type of read is called as dirty read. \n \nT1  T2 \nRead(A)   \nWrite(A)   \n|   \n|  Read(A)  //Dirty Read \n|  Write(A) \n|  COMMIT \n|   \nROLLBACK   \nAs T1 aborted, the results produced by T2 become wrong. This is because T2 read A (Dirty \nRead) which is updated by T1. \nNon-Repeatable Read: Non repeatable read occurs when a transaction read same data value \ntwice and get a different value each time. It happens when a transaction reads once before and \nonce after committed UPDATES from another transaction. \nTable in Database \nT1  T2 \n  Read A=10 \nRead(A)   \n  A \n \n  Write A=20 \nWrite(A) \n \n \nRead A=20 \n  Read(A) \nFirst, T1 reads data item A and get A=10 \nNext, T2 writes data item A as A = 20 \nLast, T1 reads data item A and get A=20 \n \n13 | P a g e \n \n \n \n \n \nOther example for Non"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 27,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "(A) \n \n \nRead A=20 \n  Read(A) \nFirst, T1 reads data item A and get A=10 \nNext, T2 writes data item A as A = 20 \nLast, T1 reads data item A and get A=20 \n \n13 | P a g e \n \n \n \n \n \nOther example for Non-repeatable read: \nTable: STUDENT_DATA before T2  Table: STUDENT_DATA after T2 \nA  B  C  A  B  C \n100  5  10  100  5  15 \n101  5  20  101  5  20 \n102  6  30  102  6  30 \n   \n     \nT1: SELECT SUM(C ) FROM STUDENT_DATA WHERE B=5;  Answer is (10+20) = 30 \nT2: UPDATE STUDENT_DATA SET C = 15 WHERE A=100;   Answer, in First row C changes to 15 \nT1: SELECT SUM(C ) FROM STUDENT_DATA WHERE B=5;  Answer is (15+20) = 35 \nPhantom reads: Phantom reads occurs when a transaction read same data value twice and get \na different value each time. It happens when a transaction reads once before and once after \ncommitted INSERTS and/or DELETES from another transaction. \nNon-repeatable read  Phantom read \nWhen T1 perform second read, there is no  When T1 perform second read, the no of rows \nchange in no of rows"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 28,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "mmitted INSERTS and/or DELETES from another transaction. \nNon-repeatable read  Phantom read \nWhen T1 perform second read, there is no  When T1 perform second read, the no of rows \nchange in no of rows in the given table  either increase or decrease. \nT2  perform  UPDATE  operation  on  the  T2  perform  INSERT  and/or  DELETE \ngiven table  operation on the given table \n \nExample for Phantom read: \nTable: STUDENT_DATA before T2  Table: STUDENT_DATA after T2 \nA  B  C  A  B  C \n100  5  10  100  5  10 \n101  5  20  101  5  20 \n102  6  30  102  6  30 \n \n \n103  5  25 \n \n \nT1: SELECT SUM(C ) FROM STUDENT_DATA WHERE B=5;  Answer is (10+20) = 30 \nT2: INSERT INTO STUDENT_DATA VALUES(103, 5, 25);  Answer, in First row C changes to 15 \nT1: SELECT SUM(C ) FROM STUDENT_DATA WHERE B=5;  Answer is (10+20+25) = 55 \n \nBased on these three phenomena, SQL define four isolation levels. They are: \n(1) Read uncommitted: This is the lowest level of isolation. In this level, one transaction \nmay read the data i"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 29,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "5) = 55 \n \nBased on these three phenomena, SQL define four isolation levels. They are: \n(1) Read uncommitted: This is the lowest level of isolation. In this level, one transaction \nmay read the data item modified by other transaction which is not committed. It mean dirty \nread is allowed. In this level, transactions are not isolated from each other. \n \n14 | P a g e \n \n \n \n \n \n(2) Read Committed: This isolation level guarantees that any data read is committed at the \nmoment it is read. Thus, it does not allow dirty read. The transaction holds a read/write lock \non the data object, and thus prevents other transactions from reading, updating or deleting it. \n(3) Repeatable Read: This is the most restrictive isolation level. The transaction holds read \nlocks on all rows it references and writes locks on all rows it inserts, updates, or deletes. \nSince other transaction cannot read, update or delete these rows, consequently it avoids non- \nrepeatable read. So other transactions cannot read,"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 30,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "s locks on all rows it inserts, updates, or deletes. \nSince other transaction cannot read, update or delete these rows, consequently it avoids non- \nrepeatable read. So other transactions cannot read, update or delete these data items. \n(4) Serializable: This is the highest isolation level. A serializable execution is guaranteed to \nbe a serial schedule. Serializable execution is defined to be an execution of operations in \nwhich concurrently executing transactions appears to be serially executing. \nThe table given below clearly depicts the relationship between isolation levels and the read \nphenomena and locks. \nIsolation Level  Dirty Read  Non-repeatable read  Phantom Read \nRead Uncommitted  May occur  May occur  May occur \nRead Committed  Don’t occur  May occur  May occur \nRepeatable Read  Don’t occur  Don’t occur  May occur \nSerializable  Don’t occur  Don’t occur  Don’t occur \nFrom the above table, it is clear that serializable isolation level is better than others. \n8. CONCURRENCY"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 31,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ad  Don’t occur  Don’t occur  May occur \nSerializable  Don’t occur  Don’t occur  Don’t occur \nFrom the above table, it is clear that serializable isolation level is better than others. \n8. CONCURRENCY CONTROL \n  Concurrency is the ability of a database to execute multiple transactions simultaneously.\n  Concurrency control is a mechanism to manage the simultaneously executing multiple \ntransactions such that no transaction interfere with other transaction.\n  Executing multiple transactions concurrently improves the system performance.\n  Concurrency control increases the throughput and reduces waiting time of transactions.\n  If Concurrency Control is not done, then it may leads to problems like lost updates, dirty \nread, non-repeatable read, phantom read etc. (Refer section 7 for more details)\n  Lost Updates: It occur when two transactions update same data item at the same time. In \nthis the first write is lost and only the second write is visible.\nConcurrency control Protoco"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 32,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "re details)\n  Lost Updates: It occur when two transactions update same data item at the same time. In \nthis the first write is lost and only the second write is visible.\nConcurrency control Protocols: \nThe concurrency can be controlled with the help of the following Protocols \n(1) Lock-Based Protocol \n(2) Timestamp-Based Protocol \n(3) Validation-Based Protocol \n \n15 | P a g e \n \n \n \n \n \n9.  LOCK-BASED PROTOCOL \n  Lock assures that one transaction should not retrieve or update a record which another \ntransaction is updating.\n  For example, traffic at junction, there are signals which indicate stop and go. When one side \nsignal is green (vehicles allowed passing), then other side signals are red (locked. Vehicles \nnot allowed passing). Similarly, in database transaction when one transaction operations are \nunder execution, the other transactions are locked.\n  If at a junction, green signal is given to more than one side, then there may be chances of \naccidents. Similarly, in data"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 33,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ction operations are \nunder execution, the other transactions are locked.\n  If at a junction, green signal is given to more than one side, then there may be chances of \naccidents. Similarly, in database transactions, if the locking is not done properly, then it will \ndisplay the inconsistent and corrupt data.\nThere are two lock modes:  (1). Shared Lock  (2).  Exclusive Lock \nShared Locks are represented by S. If a transaction T apply shared lock on data item A, then T \ni i\ncan only read A but not write into A. Shared lock is requested using lock-S instruction. \nExclusive Locks are represented by X. If a transaction T apply exclusive lock on data item A, \ni\nthen  T  can  read  as  well  as  write  data  item  A. Exclusive  lock  is  requested  using  lock-X \ni\ninstruction. \nLock Compatibility Matrix: \n  Lock Compatibility Matrix controls whether multiple transactions can acquire locks on \nthe same resource at the same time. \n  Transaction T applied \ni\nShared  Exclusive \nTransaction "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 34,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ility Matrix: \n  Lock Compatibility Matrix controls whether multiple transactions can acquire locks on \nthe same resource at the same time. \n  Transaction T applied \ni\nShared  Exclusive \nTransaction T  Shared  √  X \nj\nrequest for  Exclusive  X  X \n  If a transaction Ti applied shared lock on data item A, then Tj can also be allowed to \napply shared lock on A. \n  If a transaction Ti applied shared lock on data item A, then Tj is not allowed to apply \nexclusive lock on A. \n  If a transaction Ti applied exclusive lock on data item A, then Tj is not allowed to apply \nshared lock on A. \n  If a transaction Ti applied exclusive lock on data item A, then Tj is not allowed to apply \nexclusive lock on it. \n  Any number of transactions can hold shared locks on a data item, but if any transaction \nholds an exclusive lock on a data item, then other transactions are not allowed to hold any \nlock on that data item. \n \n16 | P a g e \n \n \n \n \n \n  Whenever a transaction wants to read a data item, "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 35,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "n \nholds an exclusive lock on a data item, then other transactions are not allowed to hold any \nlock on that data item. \n \n16 | P a g e \n \n \n \n \n \n  Whenever a transaction wants to read a data item, it should apply shared lock and when a \ntransaction wants to write it should apply exclusive lock. If the lock is not applied, then \nthe transaction is not allowed to perform the operation. \nThere are four types of lock protocols available. They are: \n(1)  Simplistic lock protocol \n  It is the simplest locking protocol. \n  It considers each read/write operation of a transaction as individual. \n  It allows transactions to perform write/read operation on a data item only after obtaining \na lock on that data item. \n  Transactions unlock the data item immediately after completing the write/read operation. \n  When a transaction needs to perform many read and write operations, for each operation \nlock is applied before performing it and release the lock immediately after completion of \nthe "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 36,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "d operation. \n  When a transaction needs to perform many read and write operations, for each operation \nlock is applied before performing it and release the lock immediately after completion of \nthe operation. \n(2)  Pre-claiming Lock Protocol \n  In pre-claiming Lock Protocol, for each transaction a list is prepared consisting of the \ndata items and type of lock required on each of the data item. \n  Before initiating an execution of the transaction, it requests DBMS to issue all the \nrequired locks as per the list. \n  If all the locks are granted then this protocol allows the transaction to begin. When the \ntransaction is completed then it releases all the lock. \n  If all the locks are not granted then this protocol allows the transaction to rolls back and \nwaits until all the locks are granted. \n \n \n   ks\nc\n   lof\n   oo\n  N\n  Begin of  End of \nTransaction  Transaction \n \n(3)  Two-phase locking (2PL) protocol \n  Every transaction execution starts by acquiring few locks or zero loc"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 37,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "e granted. \n \n \n   ks\nc\n   lof\n   oo\n  N\n  Begin of  End of \nTransaction  Transaction \n \n(3)  Two-phase locking (2PL) protocol \n  Every transaction execution starts by acquiring few locks or zero locks. During execution \nit acquire all other required locks one after the other. \n \n17 | P a g e \n \n \n \n \n \n  When a transaction releases any of the acquired locks then it cannot acquire any more \nnew locks. But, it can only release the acquired locks one after the other during remaining \nexecution of that transaction. \n \n   s\nk\nc\n  o\n   lof\n o\n  N\n \nGrowing Phase  Shrinking Phase \n \n  Begin of  End of \nTransaction  Transaction \n \nThe Two Phase Locking (2PL) has two phases. They are: \nGrowing phase: In the growing phase, a new lock on the data item may be acquired by the \ntransaction, but none can be released. (Only get new locks but no release of locks). \nShrinking phase: In the shrinking phase, existing lock held by the transaction may be released, \nbut no new locks can be acquired. (Only"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 38,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "can be released. (Only get new locks but no release of locks). \nShrinking phase: In the shrinking phase, existing lock held by the transaction may be released, \nbut no new locks can be acquired. (Only release locks but no more getting new locks). \nExample: \nTime  T1  T2 \n0  LOCK-S(A)   \n1    LOCK-S(A) \n2  Read(A)   \n3    Read(A) \n4  LOCK-X(B)   \n5  --   \n6  Read(B)   \n7  B = B + 100   \n8  Write(B)   \n9  UNLOCK(A)   \n10    LOCK-X(C) \n11  UNLOCK(B)  -- \n12    Read(C) \n13    C = C + 500 \n14    Write(C) \n15  COMMIT   \n16    UNLOCK(A) \n17    UNLOCK(C) \n18    COMMIT \nThe following way shows how unlocking and locking work with 2-PL. \nTransaction T1:  Transaction T2: \n Growing phase: from step 1-5  (After first lock onwards)   Growing phase: from step 2-11  (After first lock onwards) \n Shrinking phase: from step 10-12 (After first unlock onwards)   Shrinking phase: from step 17-18 (After first unlock onwards) \n Lock point: at 5  (No more new locks)   Lock point: at 11  (No more new locks"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 39,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "g phase: from step 10-12 (After first unlock onwards)   Shrinking phase: from step 17-18 (After first unlock onwards) \n Lock point: at 5  (No more new locks)   Lock point: at 11  (No more new locks) \n \n18 | P a g e \n \n \n \n \n \n(4)  Strict Two-phase locking (Strict-2PL) protocol \n  The first phase of Strict-2PL is similar to 2PL. In the first phase, after acquiring all the \nlocks, the transaction continues to execute normally. \n  The only difference between 2PL and strict 2PL is that Strict-2PL does not release a lock \nafter using it. \n  Strict-2PL waits until the whole transaction to commit, and then it releases all the locks at \na time. \n  Strict-2PL protocol does not have shrinking phase of lock release. \n \n \n s\n  ck\no\n   lf\no\n   o\nN\n \n  Growing Phase \n \nBegin of \nEnd of \nTransaction  Transaction \n \nStrict-2PL does not have cascading abort as 2PL does. \n \n10.  TIMESTAMP BASED PROTOCOL \n  A timestamp is issued to each transaction when it enters into the system.\n  It uses eith"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 40,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "on  Transaction \n \nStrict-2PL does not have cascading abort as 2PL does. \n \n10.  TIMESTAMP BASED PROTOCOL \n  A timestamp is issued to each transaction when it enters into the system.\n  It uses either system time or logical counter as a timestamp.\n  It is most commonly used concurrency protocol.\n  The timestamp of transaction T is denoted as TS(T).\n  The system order the transactions based on their arrival time. For example, let the arrival \ntimes of transactions T1, T2 and T3 be 9:00AM, 9:01AM and 9:02AM respectively. Then \nTS(T1) < TS(T2) < TS(T3). (9:00AM < 9:01AM < 9:02AM)\n  By using timestamp, the system prepares the serializability order. i.e., T1→T2→T3\n  The read timestamp of data item X  is denoted by R–timestamp(X).\n  R–timestamp(X): It is the time stamp of the youngest transaction that performed read \noperation on X.\nT1: Read(X) \n \nX  T2: Read(X)  R-Timestamp(X) = TS(T3) \nT3: Read(X) \n \n19 | P a g e \n \n \n \n \n \n  The write timestamp of data item X is denoted by"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 41,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "est transaction that performed read \noperation on X.\nT1: Read(X) \n \nX  T2: Read(X)  R-Timestamp(X) = TS(T3) \nT3: Read(X) \n \n19 | P a g e \n \n \n \n \n \n  The write timestamp of data item X is denoted by W–timestamp(X).\n  W–timestamp(X): It is the time stamp of the youngest transaction that performed write \noperation on X.\nT1: Write(X) \n \n  X  R-Timestamp(X) = TS(T2) \nT2: Write(X) \nThere are mainly two Timestamp Ordering Algorithms in DBMS. They are: \n  Basic Timestamp Ordering\n  Thomas Write rule\n \n(1). Basic Timestamp Ordering \n  Check the following condition whenever a transaction Ti issues a Read (X) operation:\no  If W_ timestamp(X) >TS(Ti) then the operation is rejected. \no  If W_ timestamp(X) <= TS(Ti) then the operation is executed. \n(Read is not allowed by Ti, if any younger transactions than Ti write X) \n  Check the following condition whenever a transaction Ti issues a Write(X) operation:\no  If TS(Ti) < R_ timestamp(X) then the operation is rejected. (Write is not all"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 42,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "transactions than Ti write X) \n  Check the following condition whenever a transaction Ti issues a Write(X) operation:\no  If TS(Ti) < R_ timestamp(X) then the operation is rejected. (Write is not allowed by Ti, if \nany younger transactions than Ti read X) \no  If TS(Ti) < W_ timestamp(X) then the operation is rejected and Ti is rolled back \notherwise the operation is executed. (Write is not allowed by Ti, if any younger transactions than \nTi write X and also Ti should be rolled back and restarted later) \n \n(2) Thomas's Write Rule \nThomas  Write  Rule  is  a  timestamp-based  concurrency  control  protocol  which  ignores \noutdated writes. It follows the following steps: \n(i).  If R_TS(X) > TS(T ), then abort and rollback T  and reject the operation. \na a\n \nTransaction:T1  Transaction:T2  Variable A \nArrival  = 9:00 AM  Arrival  = 9:02 AM  Initial A=100 \nTS(T1) = 9:00 AM  TS(T1) = 9:02 AM \n|  |   \n|  Read(A)  (A=100)  A = 100  (R_TS(A) = 9:02AM) \n|  |  :   \nWrite(A)  (A=200)  |  (A=10"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 43,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ariable A \nArrival  = 9:00 AM  Arrival  = 9:02 AM  Initial A=100 \nTS(T1) = 9:00 AM  TS(T1) = 9:02 AM \n|  |   \n|  Read(A)  (A=100)  A = 100  (R_TS(A) = 9:02AM) \n|  |  :   \nWrite(A)  (A=200)  |  (A=100)  A = 200 100 \n \nReject and Rollback T1 \n \n20 | P a g e \n \n \n \n \n \n(ii).  If W_TS(X) > TS(T ), then don’t execute the Write Operation of T  but continue T  \na a a\nprocessing. This is a case of Outdated or Obsolete Writes. \n \nTransaction:T1  Transaction:T2  Variable A \nArrival  = 9:00 AM  Arrival  = 9:02 AM  Initial A=100 \nTS(T1) = 9:00 AM  TS(T1) = 9:02 AM \n|  |   \n|  Write(A)  (A=400)  A = 400  (W_TS(A) = 9:02AM) \n|  |  :   \nWrite(A)  (A=500)  |  (A=400)  A = 500  (Outdated write) \n  | \nReject but continue T1  | \n|  | \n \n(iii).  If  the  condition  in  (i)  or (ii)  is  not  satisfied,  then execute  Write(X) of  T   and  set \na\nW_TS(X) to TS(T ). \na\nOutdated writes are rejected but the transaction is continued in Thomas Write Rule but in Basic \nTO protocol will reject write operation"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 44,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "hen execute  Write(X) of  T   and  set \na\nW_TS(X) to TS(T ). \na\nOutdated writes are rejected but the transaction is continued in Thomas Write Rule but in Basic \nTO protocol will reject write operation and terminate such a Transaction. \n \n11. VALIDATION BASED PROTOCOL \nIn  this  technique,  no  concurrency  control  checking  is  done  while  the  transaction  is  under \nexecution. After transaction execution is completed, then only whether concurrency violated or \nnot is checked.  It is based on timestamp based protocol. Validation Based Protocol has three \nphases: \n1.  Read phase: In this phase, the transaction T  read the value of various data items that are \na\nrequired by T  and stores them in temporary local variables. It can perform all the write \na\noperations on temporary variables without an update to the actual database. \n1.  Validation phase: After Transaction T  execution completed, T  perform a validation \na a\ntest to  determine  whether  it  can  copy  the temporary  local "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 45,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ithout an update to the actual database. \n1.  Validation phase: After Transaction T  execution completed, T  perform a validation \na a\ntest to  determine  whether  it  can  copy  the temporary  local  variable  values  to  actual \ndatabase without causing a violation of serializability. \n2.  Write phase: If the validation of the transaction is successful (valid), then the temporary \nresults are written to the database. Otherwise the temporary local variable values of T  is \na\nignored and T  is rolled back. \na\nTo perform the validation test, we need to know when the various phases of transaction T  took \na\nplace. We shall therefore associate three different timestamps with transaction T . \na\n(i).  Start (T ): the time when T , started its execution. \na a\n(ii).  Validation  (T ): the  time  when  T   finished  its  execution  and  started  its \na a\nvalidation phase. \n \n21 | P a g e \n \n \n \n \n \n(iii).  Finish (T : the time when T  finished its write phase. \na) a\nThe serializability order i"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 46,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "when  T   finished  its  execution  and  started  its \na a\nvalidation phase. \n \n21 | P a g e \n \n \n \n \n \n(iii).  Finish (T : the time when T  finished its write phase. \na) a\nThe serializability order is determined by changing the timestamp of T as TS(T) = Validation(T). \nHence  the  serializability  is  determined  at  the  validation  process  and  cannot  be  decided  in \nadvance. Therefore it ensures greater degree of concurrency while executing the transactions. \n12. MULTIPLE GRANULARITY \nThe size of data items is often called the data item granularity. There exist multiple granularity \nlevels in the DBMS. They are: \n  Database\n  Table\n  Record / row\n  Cell / field value\nTable B  Table D \nTable A \nRecord R2 \nRecord R4 \nTable E \nTable C \nCell / Field Value \nCell / Field Value \nA database contains multiple tables. Each table contains multiple records. Each record contains \nmultiple field values. It is shown in the above figure. For example, consider Table D and Record \nR2. The"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 47,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "database contains multiple tables. Each table contains multiple records. Each record contains \nmultiple field values. It is shown in the above figure. For example, consider Table D and Record \nR2. These two are not mutually exclusive. R2 is a part of D. So granularity means different \nlevels of data where as smaller levels are nested inside the higher levels. Inside database we have \ntables. Inside table we have records. Inside record we have field values. This can be represented \nwith a tree as shown below. \n \nDB \n \n \nA  B  C  D  Tables \n \n \nr1  r2  r3  r4  . . .  . . .  . . .  . . .  Records \n \n \n   \nd1  d2  d3  d4  . . .  . . .  . . .  . . .  Data values \n \n22 | P a g e \n \n \n \n \n \nA lock can be applied at a node, if and only if there does not exist any locks on the decedents \n(childs and grand childs) of that node. Otherwise lock cannot be applied. If lock is applied on \ntable A, it implies that the lack is also applicable to sub-tree from node A. If lock is applied on \ndatabase (at"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 48,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "d grand childs) of that node. Otherwise lock cannot be applied. If lock is applied on \ntable A, it implies that the lack is also applicable to sub-tree from node A. If lock is applied on \ndatabase (at root node), it implies the lack is also applicable to all the nodes in the tree. \nThe  larger  the object  size  on  which  lock  is  applied,  the  lower the  degree  of  concurrency \npermitted. On the other hand, the smaller the object size on which lock is applied, the system has \nto maintain larger number of locks. More locks cause a higher overhead and needs more disk \nspace. So, what is the best object size on which lock can be applied? It depends on the types of \ntransactions  involved.  If  a  typical  transaction  accesses  data  values  from  a  record,  it  is \nadvantageous to have the lock to that one record. On the other hand, if a transaction typically \naccesses many records in the same table, it may be better to have lock at that table. \nLocking at higher levels needs lock "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 49,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": " the lock to that one record. On the other hand, if a transaction typically \naccesses many records in the same table, it may be better to have lock at that table. \nLocking at higher levels needs lock details at lower levels. This information is provided by \nadditional  types  of  locks  called  intention  locks.  The  idea  behind  intention  locks  is  for  a \ntransaction to indicate, along the path from the root to the desired node, what type of lock \n(shared or exclusive) it will require from one of the node’s descendants. There are three types of \nintention locks: \n(1) Intention-shared (IS): It indicates that one or more shared locks will be requested on \nsome descendant node(s). \n(2) Intention-exclusive (IX): It indicates that one or more exclusive locks will be requested \non some descendant node(s). \n(3) Shared-intention-exclusive (SIX): It indicates that the current node is locked in shared \nmode but that one or more exclusive locks will be requested on some descendant node(s). "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 50,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "cendant node(s). \n(3) Shared-intention-exclusive (SIX): It indicates that the current node is locked in shared \nmode but that one or more exclusive locks will be requested on some descendant node(s). \nThe compatibility table of the three intention locks, the shared and exclusive locks, is shown in \nFigure. \nMode IS  IX  S  SIX X \nIS  Yes Yes Yes Yes No \nIX  Yes Yes No  No  No \nS  Yes No  Yes No  No \nSIX  Yes No  No  No  No \nX  No  No  No  No  No \nIt uses the intention lock modes to ensure serializability. It requires that if a transaction attempts \nto lock a node, then that node must follow these protocols: \n \n23 | P a g e \n \n \n \n \n \n  Transaction T1 should follow the lock-compatibility matrix. \n  Transaction T1 firstly locks the root of the tree. It can lock it in any mode. \n  If T1 currently has the parent of the node locked in either IX or IS mode, then the \ntransaction T1 will lock a node in S or IS mode only. \n  If T1 currently has the parent of the node locked in either IX or"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 51,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "rrently has the parent of the node locked in either IX or IS mode, then the \ntransaction T1 will lock a node in S or IS mode only. \n  If T1 currently has the parent of the node locked in either IX or SIX modes, then the \ntransaction T1 will lock a node in X, SIX, or IX mode only. \n  If T1 has not previously unlocked any node only, then the Transaction T1 can lock a \nnode. \n  If T1 currently has none of the children of the node-locked only, then Transaction T1 will \nunlock a node. \nNote: In multiple-granularity, the locks are acquired in top-down order, and locks must be \nreleased in bottom-up order. \n13. RECOVERY AND ATOMICITY \nDatabase needs to be recovered, when the following failures occur. \n(1)  Transaction failure \n(2)  System crash \n(3)  Disk failure \n  Transaction failure: During transaction execution, if it cannot proceed further, then it needs \nto abort. This is known as transaction failure. A single transaction failure may influence \nmany transactions or processes. The re"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 52,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "g transaction execution, if it cannot proceed further, then it needs \nto abort. This is known as transaction failure. A single transaction failure may influence \nmany transactions or processes. The reasons for transaction failure are: \n  Logical errors: It occurs due to some code error or an internal condition error. \n  System error: It occurs when the DBMS itself terminates an active transaction due to \ndeadlock or resource unavailability. \n  System crash: The system may crash due to the external factors such as interruptions in \npower supply, hardware or software failure. Example: Operating System errors. \n  Disk failure: In early days of technology evolution, hard-disk drives or storage drives used \nto fail frequently. Disk failure occurs due to the formation of bad sectors, disk head crash, \nun-reachable to the disk or any other failure which destroys all or part of disk storage. \nWhen a system crashes, it may have many transactions being executed and many files may be \nopened "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 53,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ad crash, \nun-reachable to the disk or any other failure which destroys all or part of disk storage. \nWhen a system crashes, it may have many transactions being executed and many files may be \nopened for them. When a DBMS recovers from a crash, it must maintain the following: \n  It must check the states of all the transactions that were being executed. \n \n24 | P a g e \n \n \n \n \n \n  Few transactions may be within the middle of some operation; the DBMS should make \nsure the atomicity of the transaction during this case. \n  It must check for each transaction whether its execution accepted or to be rolled back. \n  No transaction is allowed to be in an inconsistent state. \n \nThe following techniques facilitate a DBMS in recovering as well as maintaining the atomicity \nof a transaction: \n  Log based recovery \n  Check point \n  Shadow paging \n \n14. LOG BASED RECOVERY \nThe log file contains information about the start and end of each transaction and any updates \ndone by the transaction on"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 54,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "og based recovery \n  Check point \n  Shadow paging \n \n14. LOG BASED RECOVERY \nThe log file contains information about the start and end of each transaction and any updates \ndone by the transaction on database items. The log file is saved onto some stable storage so that if \nany failure occurs, then it can be used to recover the database. The results of all the operation of \ntransaction are first saved in the log and latter updated on the database. The log information is used to \nrecover from system failures. \nThe log is a sequence of records. It contains the following entries. \n  When a transaction Ti starts execution, the log stores:  < Ti, Start >\n  When a transaction Ti modifies an item X from old value V1 to new value V2 , the log \nstores:  < Ti , X, V1, V2>\n  When the transaction Ti execution completed, the log stores: < Ti, commit>\n  When the transaction Ti execution aborted, the log stores: < Ti, abort>\nRecovery using Log records \nWhen the system is crashed, then the DB"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 55,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "n Ti execution completed, the log stores: < Ti, commit>\n  When the transaction Ti execution aborted, the log stores: < Ti, abort>\nRecovery using Log records \nWhen the system is crashed, then the DBMS checks the log to find which transactions needs to \nbe undo and which need to be redo. There are two major techniques for recovery from non- \ncatastrophic transaction failures. They are deferred updates and immediate updates. \ni.  Deferred  database  modification:  In  this  technique,  all  the  changes  done  by  the \ntransaction are saved in the system log without modifying the actual database. Once the \ntransaction committed, then only the changes are updated in the database. If a transaction \nfails before reaching its commit point, it has not changed the database in any way so \n \n25 | P a g e \n \n \n \n \n \nUNDO is not needed. It may be necessary to REDO the effect of the operations that are \nrecorded in the system log, because their effect not yet written in the database. \nii.  Immedi"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 56,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "P a g e \n \n \n \n \n \nUNDO is not needed. It may be necessary to REDO the effect of the operations that are \nrecorded in the system log, because their effect not yet written in the database. \nii.  Immediate  database  modification:  In  this  technique,  the  database  is  modified \nimmediately after every operation. However, these operations are recorded in the log file \nbefore they are applied to the database, making recovery still possible. If a transaction \nfails  to  reach  its  commit  point, the  effect of  its operation  must  be  undone  i.e.  the \ntransaction must be rolled back hence we require both undo and redo. \n \n15. CHECKPOINT – (Recovery with Concurrent Transactions) \n  In order to recover database from system crashes, all the transaction operations are first saved \nin the log file and latter updated on the database. The log file is saved in remote location so \nthat it can be used to recover the database. As time passes, the entries in the log file may \ngrow too big.  At"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 57,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "og file and latter updated on the database. The log file is saved in remote location so \nthat it can be used to recover the database. As time passes, the entries in the log file may \ngrow too big.  At the time of recovery, searching the entire log file is very time consuming \nand an inefficient method. To ease this situation, the concept of 'checkpoint' is introduced.\n  Checkpoint is a mechanism where all the previous log entries are removed from the log file \nand their results are updated in the database. The checkpoint is like a bookmark.\n  During the execution of the transactions, after executing few operations, a check point is \ncreated and saved in the log file. Now the log file contains only entries after checkpoint \nrelated to new step of transaction till next checkpoint and so on.\n  The checkpoint is used to declare a point before which the DBMS was in the consistent state, \nand all transactions were committed.\nRecovery using Checkpoint \nIn the following manner, a recove"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 58,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "on.\n  The checkpoint is used to declare a point before which the DBMS was in the consistent state, \nand all transactions were committed.\nRecovery using Checkpoint \nIn the following manner, a recovery system recovers the database from this failure: \nCheckpoint  Failure \n \nT1 \n \nT2 \n \nT3 \n \nT4 \n \nTime \n  The recovery system reads the logs backwards from the end to the last checkpoint. \n  It maintains two lists, an undo-list and a redo-list. \n \n26 | P a g e \n \n \n \n \n \n  If the recovery system sees a log with <Ti, Start> and < Ti, Commit> or just < Ti, \nCommit>, it puts the transaction T in the redo-list. \ni\nFor example: In the log file, transaction T1 have only < T, commit> and the transactions \ni\nT2 and T3 have < T, Start> and < T, Commit>. Therefore T1, T2 and T3 transaction are \ni i\nadded to the redo list. \n  If the recovery system finds a log with < Ti, Start> but no commit or abort, then it puts \nthe transaction T in undo-list. \ni\nFor example: Transaction T4 will have < T, Sta"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 59,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "added to the redo list. \n  If the recovery system finds a log with < Ti, Start> but no commit or abort, then it puts \nthe transaction T in undo-list. \ni\nFor example: Transaction T4 will have < T, Start>. So T4 will be put into undo list \ni\nsince this transaction is not yet complete and failed in the middle. \n  All the transactions in the undo-list are then undone and their logs are removed. \n  All the transactions in the redo-list and their previous logs are removed and then redone \nbefore saving their logs. \n \n16.  ARIES ALGORITHM ( ) \nAlgorithm for Recovery and Isolation Exploiting Semantics\nAlgorithm for Recovery and Isolation Exploiting Semantics (ARIES) is one of the log based \n \nrecovery method. It uses the Write Ahead Log (WAL) protocol.\nWrite-ahead logging (WAL):  In computer science,  write-ahead logging  (WAL)  is  a \nfamily of techniques for providing atomicity and durability (two of the ACID properties) in \ndatabase systems. The change done by the transactions are first "
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 60,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ience,  write-ahead logging  (WAL)  is  a \nfamily of techniques for providing atomicity and durability (two of the ACID properties) in \ndatabase systems. The change done by the transactions are first recorded in the log file and \nwritten to stable storage at remote location, before the changes are written to the database. \nThe recovery process of ARIES algorithm has 3 phases. They are: \n(1) Analysis phase \n(2) Redo Phase \n(3) Undo Phase \n \nStart of oldest in-progress  Smallest LSN associated      \ntransaction  with dirty page  Last checkpoint  End of Log  Log Time \n \n \nAnalysis Phase \n \n \nRedo Phase \n \nUndo phase \n \n27 | P a g e \n \n \n \n \n \n(1) Analysis phase: The recovery subsystem scans the log file forward from the last checkpoint \nup to the end. The purpose of the scan is to obtain information about the following: \n  The starting point from where the redo pass should start. \n  The list of transactions to be rolled back in the undo pass. \n  The list of dirty pages. \n(2) Redo: In t"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 61,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "rmation about the following: \n  The starting point from where the redo pass should start. \n  The list of transactions to be rolled back in the undo pass. \n  The list of dirty pages. \n(2) Redo: In this phase, the log file is read forward starting from smallest LSN of a dirty page to \nthe end and each update found in the log file is redone. The purpose of this redo pass is to \nrepeat the history to reconstruct the database to the state present at the time of system failure. \n(3) Undo: The log is scanned backward and updates related to loser transactions are undone. The \n‘loser transaction’ updates are rolled  back  in reverse chronological order. If any of the \naborted transaction operations are undone, then skip them, no need to undo once again. \n17. DATABASE BACKUP \nThe process of creating duplicate copy of database is called database backup. Backup \nhelps to recover against failure of media, hardware or software failures or any other kind of \nfailures that cause a serious data cras"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 62,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ing duplicate copy of database is called database backup. Backup \nhelps to recover against failure of media, hardware or software failures or any other kind of \nfailures that cause a serious data crash. \nDatabase copy is created and stored in the remote area with the help of network. This \ndatabase is periodically updated with the current database so that it will be in sync with data and \nother details. This remote database can be updated manually called offline backup. It can be \nbacked up online where the data is updated at current and remote database simultaneously. In \nthis case, as soon as there is a failure of current database, system automatically switches to the \nremote database and starts functioning. The user will not know that there was a failure. \n \n   \nPrimary site  Network  Backup \n \n28 | P a g e \n \n \n \n \n \nSome of the backup techniques are as follows: \n  Full backup or Normal backup: Full backup is also known as Normal backup. In this, \nan exact duplicate copy of the or"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 63,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "ackup \n \n28 | P a g e \n \n \n \n \n \nSome of the backup techniques are as follows: \n  Full backup or Normal backup: Full backup is also known as Normal backup. In this, \nan exact duplicate copy of the original database is created and stored every time the \nbackup made. The advantage of this type of backup is that restoring the lost data is very \nfast as compared to other. The disadvantage of this method is that it takes more time to \nbackup.\n  Incremental Backup:  Instead of backup entire database every time, backup only the \nfiles that have been updated since the last full backup. For this at least weekly once \nnormal backup has to be done. While incremental database backups do run faster, the \nrecovery process is a bit more complicated.\n  Differential backup: Differential is similar to incremental backup but the difference is \nthat the recovery process is simplified by not clear the archive bit. So a file that is \nupdated after a normal backup will be archived every time a different"
+  },
+  {
+    "doc_id": "9bc88d6a-4afe-4b9c-9686-a128baf50110",
+    "chunk_index": 64,
+    "filename": "DBMS Unit-5 Notes.pdf",
+    "text": "incremental backup but the difference is \nthat the recovery process is simplified by not clear the archive bit. So a file that is \nupdated after a normal backup will be archived every time a differential backup is run \nuntil the next normal backup runs and clears the archive bit.\n \n29 | P a g e \n \n \n"
+  }
+]
